@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-        "name": "Odoo: Start (debugpy)",
+        "name": "Start Odoo",
         "type": "debugpy",
         "request": "launch",
         "program": "${workspaceFolder}/odoo/odoo-bin",
