@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Devbox Setup (once)",
+      "label": "Devbox Setup: once",
       "type": "shell",
       "command": "if [ ! -f .devbox/.setup-done ]; then devbox run setup && mkdir -p .devbox && touch .devbox/.setup-done; else echo 'devbox setup already completed (.devbox/.setup-done exists) — skipping.'; fi",
       "presentation": {
@@ -15,7 +15,7 @@
       }
     },
     {
-      "label": "Devbox Setup (force re-run)",
+      "label": "Devbox Setup: force re-run",
       "type": "shell",
       "command": "rm -f .devbox/.setup-done && devbox run setup && mkdir -p .devbox && touch .devbox/.setup-done",
       "presentation": {
@@ -25,7 +25,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Start All Services",
+      "label": "Start Services",
       "type": "shell",
       "command": "devbox services up",
       "presentation": {
@@ -40,7 +40,7 @@
       }
     },
     {
-      "label": "Stop All Services",
+      "label": "Stop Services",
       "type": "shell",
       "command": "devbox services stop",
       "presentation": {
