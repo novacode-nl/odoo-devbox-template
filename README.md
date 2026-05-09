@@ -146,14 +146,23 @@ To attach the process-compose processes:
 devbox services attach
 ```
 
-## Troubleshooting: PostgreSQL data directory errors
+## Troubleshooting - VS Code terminal errors (using launch.json)
 
-## F5 (Start Odoo) results in shell error:
+## F5 (Start Odoo) results in shell error(s):
 
 ```bash
 ❯  /usr/bin source /Users/bob/odoo/devbox/devbox-odoo-19/.venv/bin/activate
 zsh: permission denied: /usr/bin
 ```
+
+Or ...
+
+```bash
+❯  /usr/bin/env  source /Users/bob/odoo/devbox/devbox-odoo-19/.venv/bin/activate
+env: source: No such file or directory
+```
+
+### Solution:
 
 Disable `ms-python.vscode-python-envs` for just this workspace (this can't be done via settings JSON):
 
@@ -161,6 +170,8 @@ Disable `ms-python.vscode-python-envs` for just this workspace (this can't be do
 2. Search for `Python Environments` (publisher: Microsoft, id: `ms-python.vscode-python-envs`)
 3. Click the gear icon → "Disable (Workspace)"
 4. Reload the window when prompted
+
+## Troubleshooting - PostgreSQL data directory errors
 
 ### If you see startup errors, try:
 
