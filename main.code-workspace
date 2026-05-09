@@ -8,6 +8,7 @@
 		}
 	],
 	"settings": {
+		"devbox.autoShellOnTerminal": false,
 		"search.useParentIgnoreFiles": false,
 		"search.useIgnoreFiles": false,
 		"search.exclude": {

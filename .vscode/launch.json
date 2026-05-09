@@ -10,7 +10,7 @@
             "-c", "${workspaceFolder}/odoo.conf",
             "--dev", "xml,qweb,werkzeug"
         ],
-        "console": "internalConsole",
+        "console": "integratedTerminal",
         "cwd": "${workspaceFolder}",
         "env": {
           "PYTHONPATH": "${workspaceFolder}/odoo",
@@ -18,6 +18,31 @@
           "PATH": "${workspaceFolder}/.devbox/nix/profile/default/bin:${env:PATH}"
         },
         "python": "${workspaceFolder}/.venv/bin/python",
+        // justMyCode: false — step into Odoo framework code (ORM, models, controllers) and hit breakpoints inside odoo/ core
+        "justMyCode": false,
+    },
+    {
+        "name": "Unittests Odoo",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/odoo/odoo-bin",
+        "args": [
+            "-c", "${workspaceFolder}/odoo.conf",
+            "-d", "test1",
+            "-u", "formio",
+            "--test-enable",
+            "--stop-after-init"
+        ],
+        "console": "internalConsole",
+        "cwd": "${workspaceFolder}",
+        "redirectOutput": true,
+        "env": {
+            "PYTHONPATH": "${workspaceFolder}/odoo",
+            "ODOO_PY_COLORS": "1",
+            "PATH": "${workspaceFolder}/.devbox/nix/profile/default/bin:${env:PATH}"
+        },
+        "python": "${workspaceFolder}/.venv/bin/python",
+        // justMyCode: false — debug into Odoo framework when tests fail inside core/ORM
         "justMyCode": false,
     }
 ]
