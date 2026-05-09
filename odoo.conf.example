@@ -2,11 +2,12 @@
 addons_path = odoo/odoo/addons,odoo/addons,enterprise,addons/odoo-formio,addons/odoo-formio-premium
 data_dir = ./odoo-data
 admin_passwd = xxx
+http_interface = 127.0.0.1
 http_port = 8069
 db_host = /tmp/devbox-odoo-19
-db_port = False
+; db_port = False
 db_user = odoo
-db_password = False
+; db_password = False
 server_wide_modules = base,web
 ; csv_internal_sep = ,
 ; db_maxconn = 64
