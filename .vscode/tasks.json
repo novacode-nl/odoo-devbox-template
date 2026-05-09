@@ -33,7 +33,7 @@
         "panel": "dedicated"
       },
       "problemMatcher": [],
-      "dependsOn": ["Devbox Setup (once)"],
+      "dependsOn": ["Devbox Setup: once"],
       "dependsOrder": "sequence",
       "runOptions": {
         "runOn": "folderOpen"

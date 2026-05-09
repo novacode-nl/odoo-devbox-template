@@ -21,11 +21,11 @@ Recommended workflow when developing from VS Code with the [Jetify Devbox](https
     Make sure the Jetify Devbox extension is installed so the integrated terminal activates the devbox shell automatically.
 
 3. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
-    - `Devbox Setup (once)` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
-    - `Start All Services` — runs `devbox services up` (PostgreSQL and any other services via process-compose). Depends on the setup task above.
+    - `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
+    - `Start Services` — runs `devbox services up` (PostgreSQL and any other services via process-compose). Depends on the setup task above.
 
 4. **Start Odoo via Run and Debug** (`F5`):
-    Use the `Odoo: Start (debugpy)` launch config in [.vscode/launch.json](.vscode/launch.json) — it runs `odoo-bin` with `odoo.conf` against `.venv/bin/python` and supports breakpoints.
+    Use the `Start Odoo` launch config in [.vscode/launch.json](.vscode/launch.json) — it runs `odoo/odoo-bin` with `odoo.conf` using `.venv/bin/python` as the interpreter, and supports breakpoints. A second config, `Unittests Odoo`, runs the test suite with `--test-enable --stop-after-init`.
 
 ### VS Code tasks reference
 
@@ -33,10 +33,10 @@ Available via **Terminal → Run Task…** ([.vscode/tasks.json](.vscode/tasks.j
 
 | Task | What it does |
 | --- | --- |
-| `Devbox Setup (once)` | Runs `devbox run setup` only if `.devbox/.setup-done` is absent. Auto-runs on folder open. |
-| `Devbox Setup (force re-run)` | Removes the marker and re-runs setup. Use after pulling Odoo changes or editing `devbox.json` / `devbox-setup.sh`. |
-| `Start All Services` | `devbox services up` (process-compose). Auto-runs on folder open after setup. |
-| `Stop All Services` | `devbox services stop`. |
+| `Devbox Setup: once` | Runs `devbox run setup` only if `.devbox/.setup-done` is absent. Auto-runs on folder open. |
+| `Devbox Setup: force re-run` | Removes the marker and re-runs setup. Use after pulling Odoo changes or editing `devbox.json` / `devbox-setup.sh`. |
+| `Start Services` | `devbox services up` (process-compose). Auto-runs on folder open after setup. |
+| `Stop Services` | `devbox services stop`. |
 
 ## CLI usage (devbox shell)
 
@@ -44,10 +44,16 @@ Use this path when you prefer the terminal over VS Code, or for CI / remote sess
 
 ### 1. Start the shell (from the project root):
 
-Use direnv
+With [direnv](https://direnv.net/) installed, the [.envrc](.envrc) auto-activates the devbox shell on `cd`:
 
 ```bash
-cd ~/odoo/dev-odoo/dev-odoo-19
+cd ~/odoo/devbox/devbox-odoo-19
+```
+
+Without direnv, activate it manually:
+
+```bash
+cd ~/odoo/devbox/devbox-odoo-19
 devbox shell
 ```
 
@@ -65,22 +71,21 @@ This creates the Python venv, installs Odoo + pip deps, and initializes PostgreS
 
 Every time you open a new terminal for this project, run `devbox shell` first (or use direnv to auto-activate it).
 
-**Recommended:**
-You can still start services individually if you prefer:
-
-```bash
-devbox services start   # starts PostgreSQL in background
-devbox run start-odoo   # starts Odoo on port 50019
-```
-
-Or just use F5 in VS Code (the launch config points to .venv/bin/odoo).
-
-**Use process-compose for unified logs and monitoring:**
+**Recommended — process-compose for unified logs and monitoring:**
 This launches all services (PostgreSQL, etc.) together using process-compose, with unified logs and monitoring. Press <Ctrl+C> to stop all.
 
 ```bash
 devbox services up
 ```
+
+Or start services individually:
+
+```bash
+devbox services start   # starts PostgreSQL in background
+devbox run start-odoo   # starts Odoo (port 8069 by default, see http_port in odoo.conf)
+```
+
+Or just use F5 in VS Code (the `Start Odoo` launch config runs `odoo/odoo-bin` with `.venv/bin/python`).
 
 ### 4. Update Odoo dependencies after Git pulling changes
 
@@ -94,15 +99,16 @@ devbox run setup
 
 #### addons_path
 
-Example.\
-Whereas `enterprise` is a symlink.
+Must include the Odoo core addons paths first. `enterprise` is a symlink to a sibling checkout, and `addons/` holds project-local modules.
 
-`addons_path = enterprise,addons`
+Example (matches [odoo.conf.example](odoo.conf.example)):
+
+`addons_path = odoo/odoo/addons,odoo/addons,enterprise,addons/odoo-formio,addons/odoo-formio-premium`
 
 #### http_port
 
 Example:\
-`50019`
+`8069`
 
 #### db_host
 
@@ -116,7 +122,9 @@ The alias is (re)created automatically by `devbox run setup` and on every `devbo
 
 ## PostgreSQL
 
-`psql -h db -U odoo postgres`
+PostgreSQL listens on a Unix socket only. Connect using the socket directory as the host:
+
+`psql -h /tmp/devbox-odoo-19 -U odoo postgres`
 
 ## Technologies and tools
 
@@ -148,7 +156,7 @@ devbox services attach
     ```
 2. Removing any leftover .devbox/virtenv/postgresql/data/postmaster.pid file if it exists
 
-3 .Starting services again:
+3. Starting services again:
     ```bash
     devbox services up
     ```
