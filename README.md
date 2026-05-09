@@ -148,6 +148,20 @@ devbox services attach
 
 ## Troubleshooting: PostgreSQL data directory errors
 
+## F5 (Start Odoo) results in shell error:
+
+```bash
+❯  /usr/bin source /Users/bob/odoo/devbox/devbox-odoo-19/.venv/bin/activate
+zsh: permission denied: /usr/bin
+```
+
+Disable `ms-python.vscode-python-envs` for just this workspace (this can't be done via settings JSON):
+
+1. Open the Extensions sidebar (Cmd+Shift+X)
+2. Search for `Python Environments` (publisher: Microsoft, id: `ms-python.vscode-python-envs`)
+3. Click the gear icon → "Disable (Workspace)"
+4. Reload the window when prompted
+
 ### If you see startup errors, try:
 
 1. Stopping all devbox services:
