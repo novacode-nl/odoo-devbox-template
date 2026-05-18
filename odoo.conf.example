@@ -1,5 +1,5 @@
 [options]
-addons_path = odoo/odoo/addons,odoo/addons,enterprise,addons/odoo-formio,addons/odoo-formio-premium
+addons_path = odoo/addons,enterprise
 data_dir = ./odoo-data
 admin_passwd = xxx
 http_interface = 127.0.0.1

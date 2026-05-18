@@ -1,16 +1,44 @@
 # Odoo 19 Devbox
 
-## Quick start (VS Code)
+## First-time setup
+
+Required once per checkout, before either the VS Code or CLI workflow below.
+
+**1. Copy the Odoo config:**
+```bash
+cp odoo.conf.example odoo.conf
+```
+Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) below).
+
+**2. Provide the Odoo source** (and optionally Enterprise):
+
+Odoo 19 must be available at `<workspace>/odoo`. Enterprise modules are optional — if you have access, make the repo available at `<workspace>/enterprise`. Pick one of:
+
+- **Clone directly into the workspace:**
+  ```bash
+  git clone --branch 19.0 https://github.com/odoo/odoo.git odoo
+  git clone --branch 19.0 git@github.com:odoo/enterprise.git enterprise   # optional, private repo
+  ```
+- **Symlink an existing checkout:**
+  ```bash
+  ln -s /path/to/your/odoo-19 odoo
+  ln -s /path/to/your/enterprise-19 enterprise   # optional
+  ```
+- **Auto-symlink via `devbox run setup`:** if you keep clones at `../../repos/odoo-19` and `../../repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
+
+**3. Clone any additional addons repos** (optional):
+
+Project-local or third-party addons live under `<workspace>/addons/<repo>`. Clone (or symlink) each one there, then add the path to `addons_path` in `odoo.conf`. Example:
+```bash
+git clone --branch 19.0 https://github.com/<org>/<repo>.git addons/<repo>
+```
+Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
+
+## Usage — VS Code
 
 Recommended workflow when developing from VS Code with the [Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox) extension.
 
-1. **Copy the Odoo config** (first time only):
-    ```bash
-    cp odoo.conf.example odoo.conf
-    ```
-    Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) below).
-
-2. **Open the workspace in VS Code**:
+1. **Open the workspace in VS Code**:
     ```bash
     code .
     ```
@@ -20,11 +48,11 @@ Recommended workflow when developing from VS Code with the [Jetify Devbox](https
     ```
     Make sure the Jetify Devbox extension is installed so the integrated terminal activates the devbox shell automatically.
 
-3. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
+2. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
     - `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
     - `Start Services` — runs `devbox services up` (PostgreSQL and any other services via process-compose). Depends on the setup task above.
 
-4. **Start Odoo via Run and Debug** (`F5`):
+3. **Start Odoo via Run and Debug** (`F5`):
     Use the `Start Odoo` launch config in [.vscode/launch.json](.vscode/launch.json) — it runs `odoo/odoo-bin` with `odoo.conf` using `.venv/bin/python` as the interpreter, and supports breakpoints. A second config, `Unittests Odoo`, runs the test suite with `--test-enable --stop-after-init`.
 
 ### VS Code tasks reference
@@ -33,12 +61,23 @@ Available via **Terminal → Run Task…** ([.vscode/tasks.json](.vscode/tasks.j
 
 | Task | What it does |
 | --- | --- |
-| `Devbox Setup: once` | Runs `devbox run setup` only if `.devbox/.setup-done` is absent. Auto-runs on folder open. |
-| `Devbox Setup: force re-run` | Removes the marker and re-runs setup. Use after pulling Odoo changes or editing `devbox.json` / `devbox-setup.sh`. |
-| `Start Services` | `devbox services up` (process-compose). Auto-runs on folder open after setup. |
-| `Stop Services` | `devbox services stop`. |
+| `Devbox Setup: once` | <ul><li>Runs `devbox run setup` only if `.devbox/.setup-done` is absent.</li><li>Then [**installs addons deps** ↓](#addons-deps-install).</li><li>Auto-runs on folder open.</li></ul> |
+| `Devbox Setup: force re-run` | <ul><li>Removes the marker `.devbox/.setup-done` and re-runs setup `devbox run setup`.</li><li>Then [**installs addons deps** ↓](#addons-deps-install).</li><li>Use after pulling Odoo changes or editing `devbox.json`, `devbox-setup.sh`, or `odoo.conf`.</li></ul> |
+| `Start Services` | <ul><li>Runs `devbox services up` (process-compose).</li><li>Auto-runs on folder open after setup.</li></ul> |
+| `Stop Services` | Runs `devbox services stop`. |
 
-## CLI usage (devbox shell)
+Both `Devbox Setup` tasks are also reachable from the CLI as `devbox run setup-once` and `devbox run setup-force`.
+
+#### Addons deps install
+
+Both `Devbox Setup` tasks finish by invoking [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) (via [devbox-setup.sh](devbox-setup.sh) as the last step of `devbox run setup`); `devbox run update-deps` calls it directly too, so the same install is reachable from the CLI. The script:
+
+- Reads `addons_path` from [odoo.conf](odoo.conf).
+- For each entry, walks up to the nearest `requirements.txt` and runs `pip install -r` against it.
+- **Dynamic** — adding a new addons repo to `addons_path` is enough; no script edits needed.
+- Excludes `odoo/requirements.txt` (handled separately by `devbox-setup.sh` with the `psycopg2-binary` substitution).
+
+## Usage — CLI (devbox shell)
 
 Use this path when you prefer the terminal over VS Code, or for CI / remote sessions.
 
@@ -92,7 +131,15 @@ Or just use F5 in VS Code (the `Start Odoo` launch config runs `odoo/odoo-bin` w
 ```bash
 cd odoo
 git pull
-devbox run setup
+devbox run update-deps
+```
+
+### 5. After editing `odoo.conf` (e.g. adding a repo to `addons_path`)
+
+Run the same command — it installs the new addons' Python deps (see [Addons deps install ↑](#addons-deps-install)):
+
+```bash
+devbox run update-deps
 ```
 
 ## odoo.conf
@@ -103,7 +150,7 @@ Must include the Odoo core addons paths first. `enterprise` is a symlink to a si
 
 Example (matches [odoo.conf.example](odoo.conf.example)):
 
-`addons_path = odoo/odoo/addons,odoo/addons,enterprise,addons/odoo-formio,addons/odoo-formio-premium`
+`addons_path = odoo/addons,enterprise`
 
 #### http_port
 
