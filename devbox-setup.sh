@@ -91,6 +91,10 @@ createuser -h "$PGSOCKDIR" odoo --createdb --no-superuser --no-createrole 2>/dev
 
 pg_ctl -D "$PGDATA" stop || true
 
+# --- Install requirements.txt for each addons_path root ---
+echo "[4/4] Installing addons requirements (from odoo.conf addons_path)..."
+bash "${WORKSPACE}/scripts/install-addons-deps.sh"
+
 echo ""
 echo "=== Setup complete ==="
 echo "  Recommended:     devbox services up      # start all services (Odoo, PostgreSQL, etc.) with process-compose"
