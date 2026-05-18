@@ -28,5 +28,12 @@
 		"files.exclude": {
 			"addons": true
 		}
+	},
+	"extensions": {
+		// Disable: causes `permission denied: /usr/bin` errors from auto-running
+		// `.venv/bin/activate` in new terminals (conflicts with devbox shell).
+		"unwantedRecommendations": [
+			"ms-python.vscode-python-envs"
+		]
 	}
 }
