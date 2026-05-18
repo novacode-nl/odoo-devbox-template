@@ -164,7 +164,11 @@ env: source: No such file or directory
 
 ### Solution:
 
-Disable `ms-python.vscode-python-envs` for just this workspace (this can't be done via settings JSON):
+Disable `ms-python.vscode-python-envs` for just this workspace (the actual disable state can't be set via settings JSON — VS Code stores it per-user).
+
+This workspace already ships an `extensions.unwantedRecommendations` entry for `ms-python.vscode-python-envs` in [`main.code-workspace`](main.code-workspace). When you open the workspace, VS Code should surface a notification recommending you disable it — please follow that prompt.
+
+If you missed the notification, disable it manually:
 
 1. Open the Extensions sidebar (Cmd+Shift+X)
 2. Search for `Python Environments` (publisher: Microsoft, id: `ms-python.vscode-python-envs`)
