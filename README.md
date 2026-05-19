@@ -14,7 +14,10 @@ Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) belo
 
 **3. Provide the Odoo source** (and optionally Enterprise):
 
-Odoo 19 must be available at `<workspace>/odoo`. Enterprise modules are optional — if you have access, make the repo available at `<workspace>/enterprise`. Pick one of:
+Odoo 19 must be available at `<workspace>/odoo`.\
+Enterprise modules are optional — if you have access, make the repo available at `<workspace>/enterprise`.
+
+**Pick one of:**
 
 - **Clone directly into the workspace:**
   ```bash
@@ -40,39 +43,38 @@ Their Python deps (any `requirements.txt` at the repo root) are picked up automa
 
 Recommended workflow when developing from VS Code.
 
-1. **Open the workspace in VS Code**:
-    ```bash
-    code .
-    ```
-	 Or directly open the workspace file for automatic extension recommendations and settings:
-    ```bash
-    code main.code-workspace
-    ```
+### 1. Open the workspace in VS Code:
+```bash
+code .
+```
+    Or directly open the workspace file for automatic extension recommendations and settings:
+```bash
+code main.code-workspace
+```
 
-    Recommended extensions (surfaced as workspace recommendations on open):
+Recommended extensions (surfaced as workspace recommendations on open):
 
-    - **[Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox)** — *always recommended*
+- **[Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox)** — *always recommended*
 
-        Devbox integration commands and terminal shell activation.
+    Devbox integration commands and terminal shell activation.
 
-    - **[mkhl.direnv](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv)** — *only if you launch VS Code outside the devbox shell/PATH*
+- **[mkhl.direnv](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv)** — *only if you launch VS Code outside the devbox shell/PATH*
 
-        Loads [.envrc](.envrc) on folder open so VS Code (and its Python extension) inherits the devbox env (`python3.x.x` on PATH, `PYTHON_BIN`, etc.). Without it, VS Code scans `.venv` outside devbox and may pin to the OS system Python version instead of the version declared in [devbox.json](devbox.json).
+    Loads [.envrc](.envrc) on folder open so VS Code (and its Python extension) inherits the devbox env (`python3.x.x` on PATH, `PYTHON_BIN`, etc.). Without it, VS Code scans `.venv` outside devbox and may pin to the OS system Python version instead of the version declared in [devbox.json](devbox.json).
+    - **Need `mkhl.direnv`:** opening VS Code via `code .` from a plain terminal, or from your OS's app launcher when the `devbox shell` isn't loaded.
+    - **Skip `mkhl.direnv`:** if you always run `devbox shell` first and launch VS Code from inside it.
 
-        - **Need it:** opening VS Code via `code .` from a plain terminal, or from your OS's app launcher when the `devbox shell` isn't loaded.
-        - **Skip it:** if you always run `devbox shell` first and launch VS Code from inside it.
+	After installing `mkhl.direnv`, approve the workspace's `.envrc` once so the extension is allowed to source it:
+	```bash
+	direnv allow .
+	```
 
-        After installing, approve the workspace's `.envrc` once so the extension is allowed to source it:
-        ```bash
-        direnv allow .
-        ```
+### 2. Automatic tasks run in sequence on folder open (defined in [.vscode/tasks.json](.vscode/tasks.json)):
+- `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
+- `Start Services` — runs `devbox services up` (PostgreSQL and any other services via process-compose). Depends on the setup task above.
 
-2. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
-    - `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
-    - `Start Services` — runs `devbox services up` (PostgreSQL and any other services via process-compose). Depends on the setup task above.
-
-3. **Start Odoo via Run and Debug** (`F5`):
-    Use the `Start Odoo` launch config in [.vscode/launch.json](.vscode/launch.json) — it runs `odoo/odoo-bin` with `odoo.conf` using `.venv/bin/python` as the interpreter, and supports breakpoints. A second config, `Unittests Odoo`, runs the test suite with `--test-enable --stop-after-init`.
+### 3. Start Odoo via Run and Debug (`F5`):
+Use the `Start Odoo` launch config in [.vscode/launch.json](.vscode/launch.json) — it runs `odoo/odoo-bin` with `odoo.conf` using `.venv/bin/python` as the interpreter, and supports breakpoints. A second config, `Unittests Odoo`, runs the test suite with `--test-enable --stop-after-init`.
 
 ### VS Code tasks reference
 
