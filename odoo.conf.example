@@ -1,7 +1,8 @@
 [options]
 addons_path = odoo/addons,enterprise
 data_dir = ./odoo-data
-admin_passwd =
+; This is the password that allows database operations:
+; admin_passwd = admin
 http_interface = 127.0.0.1
 http_port = 8069
 db_host = /tmp/odoo-devbox-19
