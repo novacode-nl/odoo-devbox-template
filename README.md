@@ -1,5 +1,16 @@
 # Odoo Devbox
 
+## Introduction
+
+This is a [**Devbox**](https://www.jetify.com/devbox) project template for [**Odoo**](https://www.odoo.com) development.
+
+It pins a reproducible toolchain (Python, PostgreSQL, Node.js, `wkhtmltopdf`, `lessc`, `rtlcss`, build/native libs) in [devbox.json](devbox.json) so every contributor gets the same environment, and also ships VS Code workspace tasks and launch configs so `F5` "just works".
+
+On first run, devbox downloads all declared Nix packages and drops you into an isolated shell with everything on PATH.\
+`devbox run setup` then creates the Python venv, installs Odoo + pip deps, and initializes PostgreSQL.
+
+> **Apple Silicon (aarch64-darwin):** `wkhtmltopdf` is **excluded** from the devbox profile because nixpkgs has no working build for it on ARM macOS. Odoo PDF reports won't render until you install it manually — e.g. `brew install --cask wkhtmltopdf`, or any other source — and ensure `wkhtmltopdf` is on your PATH (system PATH is fine; devbox shell inherits it).
+
 ## First-time setup
 
 Required once per checkout, before either the VS Code or CLI workflow below.
@@ -121,8 +132,6 @@ Without direnv, activate it manually:
 cd ~/odoo/odoo-devbox
 devbox shell
 ```
-
-This downloads all Nix packages on first run (Python, PostgreSQL, wkhtmltopdf, etc.) and drops you into an isolated shell with everything on PATH.
 
 ### 2. Run the setup (first time only, inside the devbox shell):
 
