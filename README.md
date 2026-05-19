@@ -4,15 +4,17 @@
 
 Required once per checkout, before either the VS Code or CLI workflow below.
 
-**1. Install [Devbox](https://www.jetify.com/docs/devbox/installing-devbox/index)**
+> **Workspace** (and **`<workspace>`** in path examples) — the root of this checkout, where `devbox.json` lives.
 
-**2. Copy the Odoo config:**
+### 1. Install [Devbox](https://www.jetify.com/docs/devbox/installing-devbox/index)
+
+### 2. Copy the Odoo config:
 ```bash
 cp odoo.conf.example odoo.conf
 ```
 Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) below).
 
-**3. Provide the Odoo source** (and optionally Enterprise):
+### 3. Provide the Odoo source (and optionally Enterprise):
 
 Odoo 19 must be available at `<workspace>/odoo`.\
 Enterprise modules are optional — if you have access, make the repo available at `<workspace>/enterprise`.
@@ -31,7 +33,7 @@ Enterprise modules are optional — if you have access, make the repo available 
   ```
 - **Auto-symlink via `devbox run setup`:** if you keep clones at `~/odoo/repos/odoo-19` and `~/odoo/repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
 
-**4. Clone any additional addons repos** (optional):
+### 4. Clone any additional addons repos (optional):
 
 Project-local or third-party addons live under `<workspace>/addons/<repo>`. Clone (or symlink) each one there, then add the path to `addons_path` in `odoo.conf`. Example:
 ```bash
@@ -165,7 +167,7 @@ devbox run update-deps
 
 ## odoo.conf
 
-#### addons_path
+### addons_path
 
 Must include the Odoo core addons paths first. `enterprise` is a symlink to a sibling checkout, and `addons/` holds project-local modules.
 
@@ -173,12 +175,12 @@ Example (matches [odoo.conf.example](odoo.conf.example)):
 
 `addons_path = odoo/addons,enterprise`
 
-#### http_port
+### http_port
 
 Example:\
 `8069`
 
-#### db_host
+### db_host
 
 PostgreSQL runs on a Unix socket only (no TCP). `db_host` must be an absolute path to the socket directory, so we expose a stable short alias under `/tmp` whose name matches the devbox project root basename.
 
@@ -216,7 +218,7 @@ devbox services attach
 
 ## Troubleshooting - VS Code terminal errors (using launch.json)
 
-## F5 (Start Odoo) results in shell error(s):
+### F5 (Start Odoo) results in shell error(s):
 
 ```bash
 ❯  /usr/bin source ~/odoo/odoo-devbox-19/.venv/bin/activate
