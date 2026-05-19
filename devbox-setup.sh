@@ -5,38 +5,58 @@ WORKSPACE="${PWD}"
 
 echo "=== Odoo 19 Devbox Setup ==="
 
-
 # --- Verify Odoo symlink ---
-ODOO_SRC="${WORKSPACE}/../../repos/odoo-19"
-if [ ! -e "${WORKSPACE}/odoo" ]; then
+ODOO_SRC="../repos/odoo-19"
+if [ ! -e "${WORKSPACE}/odoo" ] && [ ! -L "${WORKSPACE}/odoo" ]; then
   if [ ! -d "$ODOO_SRC" ]; then
     echo "ERROR: Odoo source directory '$ODOO_SRC' does not exist. Please clone or fix the path before running this setup." >&2
     exit 1
+  else
+    echo "Notice: '${WORKSPACE}/odoo' not found. Creating symlink to $ODOO_SRC"
+    ln -s "$ODOO_SRC" "${WORKSPACE}/odoo"
   fi
-  echo "Notice: '${WORKSPACE}/odoo' not found. Creating symlink to $ODOO_SRC"
-  ln -s "$ODOO_SRC" "${WORKSPACE}/odoo"
+elif [ -L "${WORKSPACE}/odoo" ] && [ ! -e "${WORKSPACE}/odoo" ]; then
+  echo "WARNING: '${WORKSPACE}/odoo' is a broken symlink (target missing). Please fix or remove it before re-running setup." >&2
 fi
 
 # --- Verify Enterprise symlink ---
-ENTERPRISE_SRC="${WORKSPACE}/../../repos/enterprise-19"
-if [ ! -e "${WORKSPACE}/enterprise" ]; then
+ENTERPRISE_SRC="../repos/enterprise-19"
+if [ ! -e "${WORKSPACE}/enterprise" ] && [ ! -L "${WORKSPACE}/enterprise" ]; then
   if [ ! -d "$ENTERPRISE_SRC" ]; then
-    echo "ERROR: Enterprise source directory '$ENTERPRISE_SRC' does not exist. Please clone or fix the path before running this setup." >&2
-    exit 1
+    echo "WARNING: Enterprise (optional) source directory '$ENTERPRISE_SRC' does not exist. Please clone or fix the path before running this setup." >&2
+  else
+    echo "Notice: '${WORKSPACE}/enterprise' not found. Creating symlink to $ENTERPRISE_SRC"
+    ln -s "$ENTERPRISE_SRC" "${WORKSPACE}/enterprise"
   fi
-  echo "Notice: '${WORKSPACE}/enterprise' not found. Creating symlink to $ENTERPRISE_SRC"
-  ln -s "$ENTERPRISE_SRC" "${WORKSPACE}/enterprise"
-fi
-
-# --- Verify Enterprise symlink ---
-if [ ! -e "${WORKSPACE}/enterprise" ]; then
-  echo "Notice: '${WORKSPACE}/enterprise' not found. Creating symlink to ../../repos/enterprise-19"
-  ln -s ../../repos/odoo-19 "${WORKSPACE}/odoo"
+elif [ -L "${WORKSPACE}/enterprise" ] && [ ! -e "${WORKSPACE}/enterprise" ]; then
+  echo "WARNING: '${WORKSPACE}/enterprise' is a broken symlink (target missing). Please fix or remove it before re-running setup." >&2
 fi
 
 # --- Python virtualenv ---
 echo "[1/4] Setting up Python virtualenv..."
-python3 -m venv "${WORKSPACE}/.venv"
+# scripts/python-bin.sh derives the version from devbox.json's packages list (single
+# source of truth). devbox.json's `env` block isn't exported to `devbox run` contexts,
+# so we can't rely on $PYTHON_BIN being inherited from the init_hook here.
+PYTHON_BIN="$(bash "${WORKSPACE}/scripts/python-bin.sh")"
+echo "  Using ${PYTHON_BIN}"
+if [ -e "${WORKSPACE}/.venv" ] && [ ! -x "${WORKSPACE}/.venv/bin/${PYTHON_BIN}" ]; then
+  echo "  Removing .venv (not built with ${PYTHON_BIN})..."
+  rm -rf "${WORKSPACE}/.venv"
+fi
+if [ ! -x "${WORKSPACE}/.venv/bin/${PYTHON_BIN}" ]; then
+  # When this script runs outside an active direnv/devbox shell (e.g. VS Code's
+  # 'Devbox Setup: once' task spawning a fresh shell), $PYTHON_BIN may not be on
+  # PATH yet because devbox's Nix profile hasn't been materialized. Trigger it
+  # explicitly — this is what direnv would have done via .envrc on shell entry.
+  if ! command -v "${PYTHON_BIN}" >/dev/null 2>&1; then
+    echo "  '${PYTHON_BIN}' not on PATH — materializing devbox packages..."
+    devbox install
+    # devbox install only writes to .devbox/nix/profile; prepend it so this
+    # already-running shell can see the newly-installed binaries.
+    export PATH="${WORKSPACE}/.devbox/nix/profile/default/bin:${PATH}"
+  fi
+  "${PYTHON_BIN}" -m venv "${WORKSPACE}/.venv"
+fi
 . "${WORKSPACE}/.venv/bin/activate"
 pip install --upgrade pip setuptools wheel
 

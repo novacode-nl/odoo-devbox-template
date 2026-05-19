@@ -1,16 +1,18 @@
-# Odoo 19 Devbox
+# Odoo Devbox
 
 ## First-time setup
 
 Required once per checkout, before either the VS Code or CLI workflow below.
 
-**1. Copy the Odoo config:**
+**1. Install [Devbox](https://www.jetify.com/docs/devbox/installing-devbox/index)**
+
+**2. Copy the Odoo config:**
 ```bash
 cp odoo.conf.example odoo.conf
 ```
 Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) below).
 
-**2. Provide the Odoo source** (and optionally Enterprise):
+**3. Provide the Odoo source** (and optionally Enterprise):
 
 Odoo 19 must be available at `<workspace>/odoo`. Enterprise modules are optional — if you have access, make the repo available at `<workspace>/enterprise`. Pick one of:
 
@@ -24,9 +26,9 @@ Odoo 19 must be available at `<workspace>/odoo`. Enterprise modules are optional
   ln -s /path/to/your/odoo-19 odoo
   ln -s /path/to/your/enterprise-19 enterprise   # optional
   ```
-- **Auto-symlink via `devbox run setup`:** if you keep clones at `../../repos/odoo-19` and `../../repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
+- **Auto-symlink via `devbox run setup`:** if you keep clones at `~/odoo/repos/odoo-19` and `~/odoo/repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
 
-**3. Clone any additional addons repos** (optional):
+**4. Clone any additional addons repos** (optional):
 
 Project-local or third-party addons live under `<workspace>/addons/<repo>`. Clone (or symlink) each one there, then add the path to `addons_path` in `odoo.conf`. Example:
 ```bash
@@ -36,7 +38,7 @@ Their Python deps (any `requirements.txt` at the repo root) are picked up automa
 
 ## Usage — VS Code
 
-Recommended workflow when developing from VS Code with the [Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox) extension.
+Recommended workflow when developing from VS Code.
 
 1. **Open the workspace in VS Code**:
     ```bash
@@ -46,7 +48,15 @@ Recommended workflow when developing from VS Code with the [Jetify Devbox](https
     ```bash
     code main.code-workspace
     ```
-    Make sure the Jetify Devbox extension is installed so the integrated terminal activates the devbox shell automatically.
+
+    Recommended extensions (surfaced as workspace recommendations on open):
+    - [Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox) — devbox integration commands and terminal shell activation.
+    - [mkhl.direnv](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv) — loads [.envrc](.envrc) on folder open so VS Code (and its Python extension) inherits the devbox env (`python3.x.x` on PATH, `PYTHON_BIN`, etc.). Without it, VS Code scans `.venv` outside devbox and may pin to the OS system Python version instead of the version declared in [devbox.json](devbox.json).
+
+    After installing `mkhl.direnv`, approve the workspace's `.envrc` once so the extension is allowed to source it:
+    ```bash
+    direnv allow .
+    ```
 
 2. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
     - `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
@@ -86,13 +96,13 @@ Use this path when you prefer the terminal over VS Code, or for CI / remote sess
 With [direnv](https://direnv.net/) installed, the [.envrc](.envrc) auto-activates the devbox shell on `cd`:
 
 ```bash
-cd ~/odoo/devbox/devbox-odoo-19
+cd ~/odoo/odoo-devbox
 ```
 
 Without direnv, activate it manually:
 
 ```bash
-cd ~/odoo/devbox/devbox-odoo-19
+cd ~/odoo/odoo-devbox
 devbox shell
 ```
 
@@ -161,9 +171,9 @@ Example:\
 
 PostgreSQL runs on a Unix socket only (no TCP). `db_host` must be an absolute path to the socket directory, so we expose a stable short alias under `/tmp` whose name matches the devbox project root basename.
 
-For this checkout (`devbox-odoo-19`):
+For this checkout (`odoo-devbox-19`):
 
-`db_host = /tmp/devbox-odoo-19`
+`db_host = /tmp/odoo-devbox-19`
 
 The alias is (re)created automatically by `devbox run setup` and on every `devbox services up` (see [scripts/write-process-compose-pg.sh](scripts/write-process-compose-pg.sh)). If you rename or clone the project directory under a different name, update `db_host` in `odoo.conf` to match the new basename.
 
@@ -171,7 +181,7 @@ The alias is (re)created automatically by `devbox run setup` and on every `devbo
 
 PostgreSQL listens on a Unix socket only. Connect using the socket directory as the host:
 
-`psql -h /tmp/devbox-odoo-19 -U odoo postgres`
+`psql -h /tmp/odoo-devbox-19 -U odoo postgres`
 
 ## Technologies and tools
 
@@ -198,18 +208,27 @@ devbox services attach
 ## F5 (Start Odoo) results in shell error(s):
 
 ```bash
-❯  /usr/bin source /Users/bob/odoo/devbox/devbox-odoo-19/.venv/bin/activate
+❯  /usr/bin source ~/odoo/odoo-devbox-19/.venv/bin/activate
 zsh: permission denied: /usr/bin
 ```
 
 Or ...
 
 ```bash
-❯  /usr/bin/env  source /Users/bob/odoo/devbox/devbox-odoo-19/.venv/bin/activate
+❯  /usr/bin/env  source ~/odoo/odoo-devbox-19/.venv/bin/activate
 env: source: No such file or directory
 ```
 
+Or ...
+
+```bash
+❯ devbox  /usr/bin/env ~/odoo/odoo-devbox-19/.venv/bin/python
+Error: unknown command "/usr/bin/env" for "devbox"
+```
+
 ### Solution:
+
+See also: install the `mkhl.direnv` extension (see [Usage — VS Code ↑](#usage--vs-code)) so VS Code inherits the devbox env on folder open — this resolves most of the underlying interpreter-mismatch causes.
 
 Disable `ms-python.vscode-python-envs` for just this workspace (the actual disable state can't be set via settings JSON — VS Code stores it per-user).
 
