@@ -1,26 +1,31 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/main/.schema/devbox.schema.json",
-  "packages": [
-    "python@3.12",
-    "postgresql@17",
-    "nodejs@20",
-    "git@latest",
-    "gcc@latest",
-    "gnumake@latest",
-    "pkg-config@latest",
-    "libxml2@latest",
-    "libxslt@latest",
-    "openssl@latest",
-    "zlib@latest",
-    "libjpeg@latest",
-    "libffi@latest",
-    "freetype@latest",
-    "lcms2@latest",
-    "openldap@latest",
-    "cyrus_sasl@latest"
-  ],
-  "env": {
+  "packages": {
+    "python": "3.12",
+    "postgresql": "17",
+    "nodejs": "20",
+    "git": "latest",
+    "gcc": "latest",
+    "gnumake": "latest",
+    "pkg-config": "latest",
+    "libxml2": "latest",
+    "libxslt": "latest",
+    "openssl": "latest",
+    "zlib": "latest",
+    "libjpeg": "latest",
+    "libffi": "latest",
+    "freetype": "latest",
+    "lcms2": "latest",
+    "openldap": "latest",
+    "cyrus_sasl": "latest",
+    "lessc": "latest",
+    "rtlcss": "latest",
+    "wkhtmltopdf": {
+      "version": "latest",
+      "excluded_platforms": ["aarch64-darwin"]
+    }
   },
+  "env": {},
   "shell": {
     "init_hook": [
       "export PYTHON_BIN=$(bash scripts/python-bin.sh)",
