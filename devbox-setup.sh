@@ -32,6 +32,29 @@ elif [ -L "${WORKSPACE}/enterprise" ] && [ ! -e "${WORKSPACE}/enterprise" ]; the
   echo "WARNING: '${WORKSPACE}/enterprise' is a broken symlink (target missing). Please fix or remove it before re-running setup." >&2
 fi
 
+# --- odoo.conf cascade ---
+# If .devbox-env/odoo.conf exists, expose it at the workspace root as `odoo.conf`
+# (via symlink) so all consumers — devbox scripts, .vscode/launch.json,
+# install-addons-deps.sh — read from the same path. The .devbox-env/ copy "leads":
+# it's the source of truth for environment-specific overrides (e.g. an uncommitted
+# developer config). A real (non-symlink) `odoo.conf` at the root is left alone.
+DEVBOX_ENV_CONF="${WORKSPACE}/.devbox-env/odoo.conf"
+ROOT_CONF="${WORKSPACE}/odoo.conf"
+if [ -L "$ROOT_CONF" ] && [ ! -e "$ROOT_CONF" ]; then
+  echo "Notice: removing stale odoo.conf symlink (target missing)"
+  rm "$ROOT_CONF"
+fi
+if [ -f "$DEVBOX_ENV_CONF" ]; then
+  if [ ! -e "$ROOT_CONF" ] && [ ! -L "$ROOT_CONF" ]; then
+    echo "Notice: symlinking odoo.conf -> .devbox-env/odoo.conf"
+    ln -s .devbox-env/odoo.conf "$ROOT_CONF"
+  elif [ -L "$ROOT_CONF" ]; then
+    ln -sfn .devbox-env/odoo.conf "$ROOT_CONF"
+  else
+    echo "WARNING: ${ROOT_CONF} is a real file; ignoring ${DEVBOX_ENV_CONF}. Remove the root file to use the .devbox-env override." >&2
+  fi
+fi
+
 # --- Python virtualenv ---
 echo "[1/4] Setting up Python virtualenv..."
 # scripts/python-bin.sh derives the version from devbox.json's packages list (single
