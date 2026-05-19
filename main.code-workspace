@@ -28,5 +28,18 @@
 		"files.exclude": {
 			"addons": true
 		}
+	},
+	"extensions": {
+		// mkhl.direnv: loads .envrc on folder open so VS Code (and its Python extension)
+		// inherits the devbox env (PYTHON_BIN, PATH with python3.12, etc.). Without it,
+		// VS Code scans .venv outside devbox and pins to whatever interpreter is on disk.
+		"recommendations": [
+			"mkhl.direnv"
+		],
+		// Disable: causes `permission denied: /usr/bin` errors from auto-running
+		// `.venv/bin/activate` in new terminals (conflicts with devbox shell).
+		"unwantedRecommendations": [
+			"ms-python.vscode-python-envs"
+		]
 	}
 }
