@@ -8,11 +8,14 @@ Required once per checkout, before either the VS Code or CLI workflow below.
 
 ### 1. Install [Devbox](https://www.jetify.com/docs/devbox/installing-devbox/index)
 
-### 2. Copy the Odoo config:
+### 2. Add the Odoo config:
+
 ```bash
 cp odoo.conf.example odoo.conf
 ```
 Edit `addons_path`, `http_port`, etc. as needed (see [odoo.conf](#odooconf) below).
+
+> **Override via `.devbox-env/`:** if you keep an environment-specific config at `<workspace>/.devbox-env/odoo.conf`, `devbox run setup` will symlink the root `odoo.conf` to it automatically (the `.devbox-env/` copy "leads"). You can skip the `cp` above in that case. See [odoo.conf ↓](#odooconf).
 
 ### 3. Provide the Odoo source (and optionally Enterprise):
 
@@ -166,6 +169,17 @@ devbox run update-deps
 ```
 
 ## odoo.conf
+
+### Config location & cascade
+
+All consumers (devbox scripts, `.vscode/launch.json`, `scripts/install-addons-deps.sh`) read from `<workspace>/odoo.conf`. The active file is resolved by `devbox run setup` in this order:
+
+1. **`<workspace>/.devbox-env/odoo.conf`** (preferred, "leads") — the per-project config. Intended to be committed so the whole team shares the same `addons_path`, `http_port`, etc. When present, `devbox run setup` creates a symlink `<workspace>/odoo.conf → .devbox-env/odoo.conf` so every tool sees the same file at the standard path.
+2. **`<workspace>/odoo.conf`** (fallback) — a regular file at the workspace root (e.g. `cp odoo.conf.example odoo.conf`). The root `odoo.conf` is listed in [.gitignore](.gitignore), so developers can spin up a local devbox environment quickly with their own tweaks without committing anything. Use the `.devbox-env/odoo.conf` override above when you do want the config tracked in git.
+
+Notes:
+- If a real (non-symlink) `odoo.conf` exists at the root, `devbox run setup` leaves it alone and warns that `.devbox-env/odoo.conf` is being ignored. Remove the root file to switch to the override.
+- A stale symlink (target gone) is cleaned up automatically.
 
 ### addons_path
 
