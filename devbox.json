@@ -23,11 +23,13 @@
   },
   "shell": {
     "init_hook": [
-      "if [ ! -d .venv ]; then python3 -m venv .venv; fi",
+      "export PYTHON_BIN=$(bash scripts/python-bin.sh)",
+      "if [ -d .venv ] && [ ! -x .venv/bin/$PYTHON_BIN ]; then echo \"Recreating .venv (not on $PYTHON_BIN)...\"; rm -rf .venv; fi",
+      "if [ ! -d .venv ]; then $PYTHON_BIN -m venv .venv; fi",
       ". .venv/bin/activate",
       "export PYTHONPATH=$PWD/odoo:$PYTHONPATH",
-        "bash scripts/welcome.sh",
-        "alias ls='ls --color=auto'"
+      "bash scripts/welcome.sh",
+      "alias ls='ls --color=auto'"
     ],
     "scripts": {
       "setup": "bash devbox-setup.sh",
