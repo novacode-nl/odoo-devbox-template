@@ -4,7 +4,9 @@
 
 This is a [**Devbox**](https://www.jetify.com/devbox) project template for [**Odoo**](https://www.odoo.com) development.
 
-It pins a reproducible toolchain (Python, PostgreSQL, Node.js, `wkhtmltopdf`, `lessc`, `rtlcss`, build/native libs) in [devbox.json](devbox.json) so every contributor gets the same environment, and also ships VS Code workspace tasks and launch configs so `F5` "just works".
+It pins a reproducible toolchain (Python, PostgreSQL, Node.js, `wkhtmltopdf`, `lessc`, `rtlcss`, build/native libs) in [devbox.json](devbox.json) — with exact versions and hashes auto-tracked in [devbox.lock](devbox.lock) — so every deployment (e.g. developer, CI) gets the same environment.
+
+It also ships VS Code workspace tasks and launch configs so `F5` "just works".
 
 On first run, devbox downloads all declared Nix packages and drops you into an isolated shell with everything on PATH.\
 `devbox run setup` then creates the Python venv, installs Odoo + pip deps, and initializes PostgreSQL.
