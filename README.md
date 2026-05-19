@@ -50,13 +50,22 @@ Recommended workflow when developing from VS Code.
     ```
 
     Recommended extensions (surfaced as workspace recommendations on open):
-    - [Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox) — devbox integration commands and terminal shell activation.
-    - [mkhl.direnv](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv) — loads [.envrc](.envrc) on folder open so VS Code (and its Python extension) inherits the devbox env (`python3.x.x` on PATH, `PYTHON_BIN`, etc.). Without it, VS Code scans `.venv` outside devbox and may pin to the OS system Python version instead of the version declared in [devbox.json](devbox.json).
 
-    After installing `mkhl.direnv`, approve the workspace's `.envrc` once so the extension is allowed to source it:
-    ```bash
-    direnv allow .
-    ```
+    - **[Jetify Devbox](https://marketplace.visualstudio.com/items?itemName=jetpack-io.devbox)** — *always recommended*
+
+        Devbox integration commands and terminal shell activation.
+
+    - **[mkhl.direnv](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv)** — *only if you launch VS Code outside the devbox shell/PATH*
+
+        Loads [.envrc](.envrc) on folder open so VS Code (and its Python extension) inherits the devbox env (`python3.x.x` on PATH, `PYTHON_BIN`, etc.). Without it, VS Code scans `.venv` outside devbox and may pin to the OS system Python version instead of the version declared in [devbox.json](devbox.json).
+
+        - **Need it:** opening VS Code via `code .` from a plain terminal, or from your OS's app launcher when the `devbox shell` isn't loaded.
+        - **Skip it:** if you always run `devbox shell` first and launch VS Code from inside it.
+
+        After installing, approve the workspace's `.envrc` once so the extension is allowed to source it:
+        ```bash
+        direnv allow .
+        ```
 
 2. **Automatic tasks run in sequence on folder open** (defined in [.vscode/tasks.json](.vscode/tasks.json)):
     - `Devbox Setup: once` — runs `devbox run setup` if `.devbox/.setup-done` is missing (creates the venv, installs Odoo + pip deps, initializes PostgreSQL), then writes the marker so it doesn't re-run on subsequent opens.
