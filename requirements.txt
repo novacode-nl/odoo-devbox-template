@@ -1,0 +1,18 @@
+# Project (addons) Python dependencies — the single, curated source of truth.
+#
+# Add and pin the packages your addons need above the AUTO-COLLECTED block
+# below (one per line, ideally version-pinned). This file is committed so the
+# whole team shares the same set. Only uncommented lines are installed.
+#
+# Helpers:
+#   devbox run collect-deps   Refresh the COMMENTED overview of each addon's
+#                             declared requirements (from addons_path) below —
+#                             review it, then copy/pin lines up here.
+#   devbox run update-deps    Reinstall Odoo (core) + these project deps.
+
+# >>> addon-deps (AUTO-COLLECTED by scripts/collect-addons-deps.sh — DO NOT EDIT BY HAND, regenerated; commented, NOT installed) >>>
+# Requirements declared by your project addons, grouped by source — reference only.
+# Copy/pin the lines you want into the active list above; commented lines are NOT installed.
+#
+# (no addon requirements.txt found)
+# <<< addon-deps <<<

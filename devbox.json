@@ -41,6 +41,7 @@
       "setup-once": "bash scripts/setup-task.sh once",
       "setup-force": "bash scripts/setup-task.sh force",
       "update-deps": ". .venv/bin/activate && sed 's/psycopg2==/psycopg2-binary==/' ./odoo/requirements.txt | pip install -r /dev/stdin && bash scripts/install-addons-deps.sh",
+      "collect-deps": "bash scripts/collect-addons-deps.sh",
       "start-odoo": ". .venv/bin/activate && python ./odoo/odoo-bin -c odoo.conf --dev xml,qweb,werkzeug",
       "test-odoo": ". .venv/bin/activate && python ./odoo/odoo-bin -c odoo.conf -d test --test-enable --stop-after-init"
     }
