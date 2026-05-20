@@ -223,9 +223,9 @@ Example:\
 
 PostgreSQL runs on a Unix socket only (no TCP). `db_host` must be an absolute path to the socket directory, so we expose a stable short alias under `/tmp` whose name matches the devbox project root basename.
 
-For this checkout (`odoo-devbox-19`):
+For a checkout in a directory named `<project-dir-basename>`:
 
-`db_host = /tmp/odoo-devbox-19`
+`db_host = /tmp/<project-dir-basename>`
 
 The alias is (re)created automatically by `devbox run setup` and on every `devbox services up` (see [scripts/write-process-compose-pg.sh](scripts/write-process-compose-pg.sh)). If you rename or clone the project directory under a different name, update `db_host` in `odoo.conf` to match the new basename.
 
@@ -233,7 +233,7 @@ The alias is (re)created automatically by `devbox run setup` and on every `devbo
 
 PostgreSQL listens on a Unix socket only. Connect using the socket directory as the host:
 
-`psql -h /tmp/odoo-devbox-19 -U odoo postgres`
+`psql -h /tmp/<project-dir-basename> -U odoo postgres`
 
 ## Technologies and tools
 
@@ -267,21 +267,21 @@ Raised by the `ms-python.vscode-python-envs` extension on workspace load. It tri
 ### F5 (Start Odoo) results in shell error(s):
 
 ```bash
-❯  /usr/bin source ~/odoo/odoo-devbox-19/.venv/bin/activate
+❯  /usr/bin source <workspace>/.venv/bin/activate
 zsh: permission denied: /usr/bin
 ```
 
 Or ...
 
 ```bash
-❯  /usr/bin/env  source ~/odoo/odoo-devbox-19/.venv/bin/activate
+❯  /usr/bin/env  source <workspace>/.venv/bin/activate
 env: source: No such file or directory
 ```
 
 Or ...
 
 ```bash
-❯ devbox  /usr/bin/env ~/odoo/odoo-devbox-19/.venv/bin/python
+❯ devbox  /usr/bin/env <workspace>/.venv/bin/python
 Error: unknown command "/usr/bin/env" for "devbox"
 ```
 

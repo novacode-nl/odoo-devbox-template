@@ -1,14 +1,16 @@
 [options]
 ; Append addon repos as needed. addons/<repo> = tracked with this project;
 ; external-addons/<repo> = untracked third-party clones. E.g.:
-;   addons_path = odoo/addons,enterprise,addons/my-project-addons,external-addons/odoo-formio
+;   addons_path = odoo/addons,enterprise,addons/<your-addons>,external-addons/<third-party-repo>
 addons_path = odoo/addons
 data_dir = ./odoo-data
 ; This is the password that allows database operations:
 ; admin_passwd = admin
 http_interface = 127.0.0.1
 http_port = 8069
-db_host = /tmp/odoo-devbox-19
+; PostgreSQL Unix socket dir. `devbox run setup` creates a stable alias at
+; /tmp/<project-dir-basename>; set db_host to match your checkout's dir name.
+db_host = /tmp/<project-dir-basename>
 ; db_port = False
 db_user = odoo
 ; db_password = False
