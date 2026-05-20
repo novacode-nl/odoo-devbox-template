@@ -28,8 +28,9 @@
         "program": "${workspaceFolder}/odoo/odoo-bin",
         "args": [
             "-c", "${workspaceFolder}/odoo.conf",
-            "-d", "test1",
-            "-u", "formio",
+            "-d", "test",
+            // Replace "your_module" with the addon module(s) you want to test:
+            "-u", "your_module",
             "--test-enable",
             "--stop-after-init"
         ],
