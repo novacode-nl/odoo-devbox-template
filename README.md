@@ -75,6 +75,18 @@ Addons live in two sibling directories, depending on whether you want them versi
 
 Either way, add the module path(s) to `addons_path` in `odoo.conf`. Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
 
+## Addons deps install
+
+A curated, pinned **workspace-root `requirements.txt` is the single source of truth** for addon Python deps. Keeping all deps in one committed file prevents version collisions and regressions when an addon updates its own `requirements.txt`.
+
+**Install** — [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) installs that `requirements.txt`. It runs at the end of `devbox run setup` (and on the `Devbox Setup` tasks), and `devbox run update-deps` calls it too. Only the active (uncommented) lines are installed; if there's no `requirements.txt`, it's skipped.
+
+**Collect** — `devbox run collect-deps` ([scripts/collect-addons-deps.sh](scripts/collect-addons-deps.sh)) discovers each addon's `requirements.txt` (resolved from `addons_path`, walking up — handles both `addons/` and `external-addons/`, excluding `odoo/`) and writes them as a **commented** `# >>> addon-deps >>>` block at the end of `requirements.txt`, purely as an overview. Commented lines are **not** installed; review the block and copy/pin the packages you want into the active list above it. Re-running regenerates the block and preserves your active pins.
+
+Typical flow: `devbox run collect-deps` → review the overview → uncomment/pin what you need → commit `requirements.txt` → `devbox run update-deps`.
+
+`odoo/requirements.txt` is handled separately by `devbox-setup.sh` (with the `psycopg2-binary` substitution).
+
 ## Usage — VS Code
 
 Recommended workflow when developing from VS Code.
@@ -120,24 +132,12 @@ Available via **Terminal → Run Task…** ([.vscode/tasks.json](.vscode/tasks.j
 
 | Task | What it does |
 | --- | --- |
-| `Devbox Setup: once` | <ul><li>Runs `devbox run setup` only if `.devbox/.setup-done` is absent.</li><li>Then [**installs addons deps** ↓](#addons-deps-install).</li><li>Auto-runs on folder open.</li></ul> |
-| `Devbox Setup: force re-run` | <ul><li>Removes the marker `.devbox/.setup-done` and re-runs setup `devbox run setup`.</li><li>Then [**installs addons deps** ↓](#addons-deps-install).</li><li>Use after pulling Odoo changes or editing `devbox.json`, `devbox-setup.sh`, or `odoo.conf`.</li></ul> |
+| `Devbox Setup: once` | <ul><li>Runs `devbox run setup` only if `.devbox/.setup-done` is absent.</li><li>Then [**installs addons deps** ↑](#addons-deps-install).</li><li>Auto-runs on folder open.</li></ul> |
+| `Devbox Setup: force re-run` | <ul><li>Removes the marker `.devbox/.setup-done` and re-runs setup `devbox run setup`.</li><li>Then [**installs addons deps** ↑](#addons-deps-install).</li><li>Use after pulling Odoo changes or editing `devbox.json`, `devbox-setup.sh`, or `odoo.conf`.</li></ul> |
 | `Start Services` | <ul><li>Runs `devbox services up` (process-compose).</li><li>Auto-runs on folder open after setup.</li></ul> |
 | `Stop Services` | Runs `devbox services stop`. |
 
 Both `Devbox Setup` tasks are also reachable from the CLI as `devbox run setup-once` and `devbox run setup-force`.
-
-#### Addons deps install
-
-A curated, pinned **workspace-root `requirements.txt` is the single source of truth** for addon Python deps. Keeping all deps in one committed file prevents version collisions and regressions when an addon updates its own `requirements.txt`.
-
-**Install** — [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) installs that `requirements.txt`. It runs at the end of `devbox run setup` (and on the `Devbox Setup` tasks), and `devbox run update-deps` calls it too. Only the active (uncommented) lines are installed; if there's no `requirements.txt`, it's skipped.
-
-**Collect** — `devbox run collect-deps` ([scripts/collect-addons-deps.sh](scripts/collect-addons-deps.sh)) discovers each addon's `requirements.txt` (resolved from `addons_path`, walking up — handles both `addons/` and `external-addons/`, excluding `odoo/`) and writes them as a **commented** `# >>> addon-deps >>>` block at the end of `requirements.txt`, purely as an overview. Commented lines are **not** installed; review the block and copy/pin the packages you want into the active list above it. Re-running regenerates the block and preserves your active pins.
-
-Typical flow: `devbox run collect-deps` → review the overview → uncomment/pin what you need → commit `requirements.txt` → `devbox run update-deps`.
-
-`odoo/requirements.txt` is handled separately by `devbox-setup.sh` (with the `psycopg2-binary` substitution).
 
 ## Usage — CLI (devbox shell)
 
