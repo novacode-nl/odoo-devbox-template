@@ -33,25 +33,25 @@ elif [ -L "${WORKSPACE}/enterprise" ] && [ ! -e "${WORKSPACE}/enterprise" ]; the
 fi
 
 # --- odoo.conf cascade ---
-# If .devbox-env/odoo.conf exists, expose it at the workspace root as `odoo.conf`
+# If devbox.d/odoo.conf exists, expose it at the workspace root as `odoo.conf`
 # (via symlink) so all consumers — devbox scripts, .vscode/launch.json,
-# install-addons-deps.sh — read from the same path. The .devbox-env/ copy "leads":
+# install-addons-deps.sh — read from the same path. The devbox.d/ copy "leads":
 # it's the source of truth for environment-specific overrides (e.g. an uncommitted
 # developer config). A real (non-symlink) `odoo.conf` at the root is left alone.
-DEVBOX_ENV_CONF="${WORKSPACE}/.devbox-env/odoo.conf"
+DEVBOX_D_CONF="${WORKSPACE}/devbox.d/odoo.conf"
 ROOT_CONF="${WORKSPACE}/odoo.conf"
 if [ -L "$ROOT_CONF" ] && [ ! -e "$ROOT_CONF" ]; then
   echo "Notice: removing stale odoo.conf symlink (target missing)"
   rm "$ROOT_CONF"
 fi
-if [ -f "$DEVBOX_ENV_CONF" ]; then
+if [ -f "$DEVBOX_D_CONF" ]; then
   if [ ! -e "$ROOT_CONF" ] && [ ! -L "$ROOT_CONF" ]; then
-    echo "Notice: symlinking odoo.conf -> .devbox-env/odoo.conf"
-    ln -s .devbox-env/odoo.conf "$ROOT_CONF"
+    echo "Notice: symlinking odoo.conf -> devbox.d/odoo.conf"
+    ln -s devbox.d/odoo.conf "$ROOT_CONF"
   elif [ -L "$ROOT_CONF" ]; then
-    ln -sfn .devbox-env/odoo.conf "$ROOT_CONF"
+    ln -sfn devbox.d/odoo.conf "$ROOT_CONF"
   else
-    echo "WARNING: ${ROOT_CONF} is a real file; ignoring ${DEVBOX_ENV_CONF}. Remove the root file to use the .devbox-env override." >&2
+    echo "WARNING: ${ROOT_CONF} is a real file; ignoring ${DEVBOX_D_CONF}. Remove the root file to use the devbox.d override." >&2
   fi
 fi
 
@@ -88,9 +88,8 @@ echo "[2/4] Installing Odoo 19 and Python dependencies..."
 # Use psycopg2-binary (prebuilt) instead of psycopg2 (requires pg_config + libpq headers)
 sed 's/psycopg2==/psycopg2-binary==/' "${WORKSPACE}/odoo/requirements.txt" \
   | pip install -r /dev/stdin
-if [ -f "${WORKSPACE}/requirements.txt" ]; then
-  pip install -r "${WORKSPACE}/requirements.txt"
-fi
+# The workspace-root requirements.txt (if any) and addon deps are installed by
+# scripts/install-addons-deps.sh below — see step [4/4].
 
 # --- Ensure odoo-data directory exists for filestore/attachments ---
 mkdir -p "${WORKSPACE}/odoo-data"
@@ -134,8 +133,11 @@ createuser -h "$PGSOCKDIR" odoo --createdb --no-superuser --no-createrole 2>/dev
 
 pg_ctl -D "$PGDATA" stop || true
 
-# --- Install requirements.txt for each addons_path root ---
-echo "[4/4] Installing addons requirements (from odoo.conf addons_path)..."
+# --- Install addon Python deps ---
+# Installs the curated workspace-root requirements.txt (the single source of
+# truth). Use `devbox run collect-deps` to gather addon requirements into a
+# commented overview there first. No-op if requirements.txt is absent.
+echo "[4/4] Installing addon requirements..."
 bash "${WORKSPACE}/scripts/install-addons-deps.sh"
 
 echo ""

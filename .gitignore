@@ -1,6 +1,11 @@
 # Odoo specific
-addons/*
-!addons/.gitkeep
+# addons/           — this project's own addons, tracked (committed) in git.
+# external-addons/  — third-party / external addon clones, NOT tracked here
+#                     (clone or symlink them per checkout).
+# Both are wired into Odoo via addons_path in odoo.conf and picked up by
+# scripts/install-addons-deps.sh.
+external-addons/*
+!external-addons/.gitkeep
 enterprise
 odoo
 odoo-data

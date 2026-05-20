@@ -13,7 +13,8 @@ ${cyan}Odoo 19 Devbox${reset}
   ${bold}devbox services stop${reset}     Stop PostgreSQL
   ${bold}devbox run start-odoo${reset}    Start Odoo (port ${ODOO_HTTP_PORT:-8069})
   ${bold}devbox run test-odoo${reset}     Run Odoo tests
-  ${bold}devbox run update-deps${reset}   Reinstall Odoo Python dependencies
+  ${bold}devbox run collect-deps${reset}  Gather project (addons) deps into the top-level requirements.txt (commented overview)
+  ${bold}devbox run update-deps${reset}   Reinstall Odoo (core) deps + project (addons) deps from requirements.txt
 See README.md for details.
 
 EOF

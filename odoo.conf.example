@@ -1,5 +1,8 @@
 [options]
-addons_path = odoo/addons,enterprise
+; Append addon repos as needed. addons/<repo> = tracked with this project;
+; external-addons/<repo> = untracked third-party clones. E.g.:
+;   addons_path = odoo/addons,enterprise,addons/my-project-addons,external-addons/odoo-formio
+addons_path = odoo/addons
 data_dir = ./odoo-data
 ; This is the password that allows database operations:
 ; admin_passwd = admin

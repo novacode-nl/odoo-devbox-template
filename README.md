@@ -23,18 +23,18 @@ Required once per checkout, before either the VS Code or CLI workflow below.
 
 ### 2. Add the Odoo config:
 
-The root `odoo.conf` is in [.gitignore](.gitignore) — it's never committed, whether it's a regular file you created (e.g. `cp odoo.conf.example odoo.conf`) or a symlink to `.devbox-env/odoo.conf` that `devbox run setup` created for you.\
-Use the `.devbox-env/odoo.conf` option below if you want the config tracked in git (shared per-project).
+The root `odoo.conf` is in [.gitignore](.gitignore) — it's never committed, whether it's a regular file you created (e.g. `cp odoo.conf.example odoo.conf`) or a symlink to `devbox.d/odoo.conf` that `devbox run setup` created for you.\
+Use the `devbox.d/odoo.conf` option below if you want the config tracked in git (shared per-project).
 
 All consumers (devbox scripts, `.vscode/launch.json`, `scripts/install-addons-deps.sh`) read from `<workspace>/odoo.conf`.\
 The active `odoo.conf` file is resolved by `devbox run setup` in this order:
 
-1. **`<workspace>/.devbox-env/odoo.conf`** (the per-project config) — intended to be Git committed so the whole team shares the same `addons_path`, `http_port`, etc.\
-When **no real root `odoo.conf` exists**, `devbox run setup` creates a symlink `<workspace>/odoo.conf → .devbox-env/odoo.conf` so every tool sees the same file at the standard path.
+1. **`<workspace>/devbox.d/odoo.conf`** (the per-project config) — intended to be Git committed so the whole team shares the same `addons_path`, `http_port`, etc.\
+When **no real root `odoo.conf` exists**, `devbox run setup` creates a symlink `<workspace>/odoo.conf → devbox.d/odoo.conf` so every tool sees the same file at the standard path.
 2. **`<workspace>/odoo.conf`** (real root file) — a regular file at the workspace root (e.g. `cp odoo.conf.example odoo.conf`).\
 Lets developers spin up a local devbox environment quickly with their own tweaks without committing anything.
 
-**If a real root file exists, it wins** over `.devbox-env/odoo.conf` — `devbox run setup` leaves it alone and prints a warning that the `.devbox-env` override is being ignored. Delete the root file to activate the override.
+**If a real root file exists, it wins** over `devbox.d/odoo.conf` — `devbox run setup` leaves it alone and prints a warning that the `devbox.d` override is being ignored. Delete the root file to activate the override.
 
 Notes:
 - A stale symlink (target gone) is cleaned up automatically by `devbox run setup`.
@@ -60,16 +60,20 @@ Enterprise modules are optional — if you have access, make the repo available 
   ```
 - **Auto-symlink via `devbox run setup`:** if you keep clones at `~/odoo/repos/odoo-19` and `~/odoo/repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
 
-### 4. Clone any additional addons repos (optional):
+### 4. Add any additional addons repos (optional):
 
-Project-local or third-party addons live under `<workspace>/addons/<repo>`.\
-Clone (or symlink) each one there, then add the path to `addons_path` in `odoo.conf`.
+Addons live in two sibling directories, depending on whether you want them versioned with *this* project:
 
-Example:
-```bash
-git clone --branch 19.0 https://github.com/<org>/<repo>.git addons/<repo>
-```
-Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
+1. **`<workspace>/addons/<repo>`** — **tracked** by git. Use for this project's own addons, committed here (as a git submodule or a vendored directory).
+   ```bash
+   git submodule add -b 19.0 https://github.com/<org>/<repo>.git addons/<repo>
+   ```
+2. **`<workspace>/external-addons/<repo>`** — **not tracked** (the `external-addons/` tree is in [.gitignore](.gitignore)). Use for third-party clones you don't want to commit here.
+   ```bash
+   git clone --branch 19.0 https://github.com/<org>/<repo>.git external-addons/<repo>
+   ```
+
+Either way, add the module path(s) to `addons_path` in `odoo.conf`. Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
 
 ## Usage — VS Code
 
@@ -125,12 +129,15 @@ Both `Devbox Setup` tasks are also reachable from the CLI as `devbox run setup-o
 
 #### Addons deps install
 
-Both `Devbox Setup` tasks finish by invoking [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) (via [devbox-setup.sh](devbox-setup.sh) as the last step of `devbox run setup`); `devbox run update-deps` calls it directly too, so the same install is reachable from the CLI. The script:
+A curated, pinned **workspace-root `requirements.txt` is the single source of truth** for addon Python deps. Keeping all deps in one committed file prevents version collisions and regressions when an addon updates its own `requirements.txt`.
 
-- Reads `addons_path` from [odoo.conf](odoo.conf).
-- For each entry, walks up to the nearest `requirements.txt` and runs `pip install -r` against it.
-- **Dynamic** — adding a new addons repo to `addons_path` is enough; no script edits needed.
-- Excludes `odoo/requirements.txt` (handled separately by `devbox-setup.sh` with the `psycopg2-binary` substitution).
+**Install** — [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) installs that `requirements.txt`. It runs at the end of `devbox run setup` (and on the `Devbox Setup` tasks), and `devbox run update-deps` calls it too. Only the active (uncommented) lines are installed; if there's no `requirements.txt`, it's skipped.
+
+**Collect** — `devbox run collect-deps` ([scripts/collect-addons-deps.sh](scripts/collect-addons-deps.sh)) discovers each addon's `requirements.txt` (resolved from `addons_path`, walking up — handles both `addons/` and `external-addons/`, excluding `odoo/`) and writes them as a **commented** `# >>> addon-deps >>>` block at the end of `requirements.txt`, purely as an overview. Commented lines are **not** installed; review the block and copy/pin the packages you want into the active list above it. Re-running regenerates the block and preserves your active pins.
+
+Typical flow: `devbox run collect-deps` → review the overview → uncomment/pin what you need → commit `requirements.txt` → `devbox run update-deps`.
+
+`odoo/requirements.txt` is handled separately by `devbox-setup.sh` (with the `psycopg2-binary` substitution).
 
 ## Usage — CLI (devbox shell)
 
@@ -201,7 +208,7 @@ See [step 2 ↑](#2-add-the-odoo-config) for the file location and cascade.
 
 ### addons_path
 
-Must include the Odoo core addons paths first. `enterprise` is a symlink to a sibling checkout, and `addons/` holds project-local modules.
+Must include the Odoo core addons paths first. `enterprise` is a symlink to a sibling checkout; `addons/<repo>` holds this project's tracked addons, and `external-addons/<repo>` holds untracked third-party clones.
 
 Example (matches [odoo.conf.example](odoo.conf.example)):
 
