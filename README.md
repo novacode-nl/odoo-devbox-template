@@ -58,7 +58,7 @@ Enterprise modules are optional — if you have access, make the repo available 
   ln -s /path/to/your/odoo-19 odoo
   ln -s /path/to/your/enterprise-19 enterprise   # optional
   ```
-- **Auto-symlink via `devbox run setup`:** if you keep clones at `~/odoo/repos/odoo-19` and `~/odoo/repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
+- **Auto-symlink via `devbox run setup`:** if you keep clones at `../repos/odoo-19` and `../repos/enterprise-19` (relative to the workspace), [devbox-setup.sh](devbox-setup.sh) creates the symlinks for you on the first run.
 
 ### 4. Add any additional addons repos (optional):
 
@@ -148,13 +148,13 @@ Use this path when you prefer the terminal over VS Code, or for CI / remote sess
 With [direnv](https://direnv.net/) installed, the [.envrc](.envrc) auto-activates the devbox shell on `cd`:
 
 ```bash
-cd ~/odoo/odoo-devbox
+cd <workspace>
 ```
 
 Without direnv, activate it manually:
 
 ```bash
-cd ~/odoo/odoo-devbox
+cd <workspace>
 devbox shell
 ```
 
