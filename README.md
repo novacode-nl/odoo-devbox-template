@@ -81,7 +81,7 @@ A curated, pinned **workspace-root `requirements.txt` is the single source of tr
 
 **Install** — [scripts/install-addons-deps.sh](scripts/install-addons-deps.sh) installs that `requirements.txt`. It runs at the end of `devbox run setup` (and on the `Devbox Setup` tasks), and `devbox run update-deps` calls it too. Only the active (uncommented) lines are installed; if there's no `requirements.txt`, it's skipped.
 
-**Collect** — `devbox run collect-deps` ([scripts/collect-addons-deps.sh](scripts/collect-addons-deps.sh)) discovers each addon's `requirements.txt` (resolved from `addons_path`, walking up — handles both `addons/` and `external-addons/`, excluding `odoo/`) and writes them as a **commented** `# >>> addon-deps >>>` block at the end of `requirements.txt`, purely as an overview. Commented lines are **not** installed; review the block and copy/pin the packages you want into the active list above it. Re-running regenerates the block and preserves your active pins.
+**Collect** — `devbox run collect-deps` ([scripts/collect-addons-deps.sh](scripts/collect-addons-deps.sh)) discovers each addon's `requirements.txt` (resolved from `addons_path`, walking up — handles both `addons/` and `external-addons/`, excluding `odoo/`) and writes them as a **commented** `# >>> addons-deps >>>` block at the end of `requirements.txt`, purely as an overview. Commented lines are **not** installed; review the block and copy/pin the packages you want into the active list above it. Re-running regenerates the block and preserves your active pins.
 
 Typical flow: `devbox run collect-deps` → review the overview → uncomment/pin what you need → commit `requirements.txt` → `devbox run update-deps`.
 

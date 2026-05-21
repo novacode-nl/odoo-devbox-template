@@ -18,8 +18,8 @@ CONF="${WORKSPACE}/odoo.conf"
 ODOO_REQ="${WORKSPACE}/odoo/requirements.txt"
 ROOT_REQ="${WORKSPACE}/requirements.txt"
 
-BEGIN_MARK="# >>> addon-deps (AUTO-COLLECTED by scripts/collect-addons-deps.sh — DO NOT EDIT BY HAND, regenerated; commented, NOT installed) >>>"
-END_MARK="# <<< addon-deps <<<"
+BEGIN_MARK="# >>> addons-deps (AUTO-COLLECTED by scripts/collect-addons-deps.sh — DO NOT EDIT BY HAND, regenerated; commented, NOT installed) >>>"
+END_MARK="# <<< addons-deps <<<"
 
 if [ ! -f "${CONF}" ]; then
   echo "[collect-addons-deps] odoo.conf not found at ${CONF} — nothing to collect."
@@ -102,5 +102,5 @@ cat "${block}" >> "${tmp}"
 mv "${tmp}" "${ROOT_REQ}"
 rm -f "${block}"
 
-echo "[collect-addons-deps] Wrote commented addon-deps overview to ${ROOT_REQ} (${#reqs[@]} source file(s))."
+echo "[collect-addons-deps] Wrote commented addons-deps overview to ${ROOT_REQ} (${#reqs[@]} source file(s))."
 echo "[collect-addons-deps] Review it; uncomment/pin what you need — only uncommented lines are installed."
