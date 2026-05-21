@@ -10,9 +10,9 @@
 #                             review it, then copy/pin lines up here.
 #   devbox run update-deps    Reinstall Odoo (core) + these project deps.
 
-# >>> addon-deps (AUTO-COLLECTED by scripts/collect-addons-deps.sh — DO NOT EDIT BY HAND, regenerated; commented, NOT installed) >>>
+# >>> addons-deps (AUTO-COLLECTED by scripts/collect-addons-deps.sh — DO NOT EDIT BY HAND, regenerated; commented, NOT installed) >>>
 # Requirements declared by your project addons, grouped by source — reference only.
 # Copy/pin the lines you want into the active list above; commented lines are NOT installed.
 #
 # (no addon requirements.txt found)
-# <<< addon-deps <<<
+# <<< addons-deps <<<
