@@ -1,0 +1,5 @@
+{#- Dispatcher: ship the lock for the chosen Odoo version verbatim, falling back
+    to the 19.0 (default) lock for any unrecognized version. The per-version
+    src/devbox.lock.<ver>.jinja files are real, self-contained locks (excluded
+    from being copied on their own; see _exclude in copier.yml). -#}
+{%- include ["src/devbox.lock." ~ odoo_version ~ ".jinja", "src/devbox.lock.19.0.jinja"] -%}

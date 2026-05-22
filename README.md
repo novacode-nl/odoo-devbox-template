@@ -68,13 +68,26 @@ overridden at the prompt.
     ├── devbox-setup.sh.jinja
     ├── README.md.jinja
     ├── .copier-answers.yml.jinja
+    ├── devbox.lock.jinja        # dispatcher: includes the per-version lock
+    ├── devbox.lock.17.0.jinja   # real, full lock for Odoo 17.0  (not copied as-is)
+    ├── devbox.lock.18.0.jinja   # real, full lock for Odoo 18.0  (not copied as-is)
+    ├── devbox.lock.19.0.jinja   # real, full lock for Odoo 19.0  (not copied as-is)
     ├── scripts/
     └── …
 ```
 
 Files ending in `.jinja` are rendered (suffix stripped); everything else under
-`src/` is copied verbatim. `devbox.lock` is intentionally not shipped — it is
-version-pinned and regenerated per project by `devbox install`.
+`src/` is copied verbatim.
+
+`devbox.lock` is shipped **version-specific** so the first `direnv`/devbox entry
+is fast for every Odoo version. There is one real, self-contained lock per
+version (`devbox.lock.<ver>.jinja`); a tiny dispatcher
+([src/devbox.lock.jinja](src/devbox.lock.jinja)) `{% include %}`s the one
+matching `odoo_version`, falling back to the 19.0 lock for any unknown version.
+The per-version files are excluded from being copied on their own (`_exclude` in
+`copier.yml`) — only the dispatcher renders, to a single `devbox.lock`. Across
+versions only the `python`/`postgresql` entries differ; the heavier `@latest`
+packages (e.g. `gcc`) are identical and stay pinned.
 
 ## License
 

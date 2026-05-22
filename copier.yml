@@ -26,10 +26,17 @@ _exclude:
   - "__pycache__"
   - ".git"
   - ".DS_Store"
-  # devbox.lock is version-pinned (Nix hashes for the chosen python/postgresql).
-  # It is regenerated per project by `devbox install` / `devbox run setup`,
-  # so shipping a stale one would be wrong for non-default versions.
-  - "devbox.lock"
+  # devbox.lock is shipped version-specific: src/devbox.lock.jinja is a tiny
+  # dispatcher that {% include %}s the matching src/devbox.lock.<ver>.jinja
+  # (real, self-contained locks), falling back to 19.0 for an unknown version.
+  # The per-version partials must NOT be copied as standalone files — only the
+  # dispatcher renders, to a single devbox.lock. (Jinja's loader still reads the
+  # excluded partials from disk for the include.) Each version gets an instant
+  # first `devbox install`; only python/postgresql differ across versions.
+  # NB: _exclude matches the DESTINATION path (the .jinja suffix is already
+  # stripped), hence "devbox.lock.*" — which matches devbox.lock.17.0 etc. but
+  # not the dispatcher output "devbox.lock" (no trailing dot).
+  - "devbox.lock.*"
 
 # Record answers in the generated project so `copier update` works.
 _answers_file: .copier-answers.yml
