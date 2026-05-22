@@ -1,0 +1,89 @@
+# Copier configuration for the Odoo Devbox template.
+# Docs: https://copier.readthedocs.io/en/stable/configuring/
+#
+# Generate a project:
+#   copier copy gh:<org>/odoo-devbox path/to/new-project
+# Update an existing project to a newer template version:
+#   cd path/to/new-project && copier update
+
+# --- Template settings -------------------------------------------------------
+_min_copier_version: "9.0.0"
+
+# The project skeleton lives under src/; the repo root holds the template's own
+# README, LICENSE and this config (none of which are copied into projects).
+_subdirectory: src
+
+# Files ending in .jinja are rendered (and the suffix stripped); everything else
+# is copied verbatim.
+_templates_suffix: .jinja
+
+# Never copy these into generated projects.
+_exclude:
+  - "copier.yml"
+  - "copier.yaml"
+  - "~*"
+  - "*.bak"
+  - "__pycache__"
+  - ".git"
+  - ".DS_Store"
+  # devbox.lock is version-pinned (Nix hashes for the chosen python/postgresql).
+  # It is regenerated per project by `devbox install` / `devbox run setup`,
+  # so shipping a stale one would be wrong for non-default versions.
+  - "devbox.lock"
+
+# Record answers in the generated project so `copier update` works.
+_answers_file: .copier-answers.yml
+
+_message_after_copy: |
+  Your Odoo {{ odoo_version }} devbox project "{{ project_name }}" is ready.
+
+  Next steps:
+    1. cd into the project and `git init` (if not already a repo).
+    2. Provide the Odoo source — see "First-time setup" in README.md.
+    3. `devbox run setup` (creates the venv, installs Odoo + deps, init PostgreSQL).
+
+# --- Questions ---------------------------------------------------------------
+project_name:
+  type: str
+  help: Human-readable project name (README title, welcome banner).
+  default: Odoo Devbox
+
+odoo_version:
+  type: str
+  help: Which Odoo version is this project targeting?
+  choices:
+    "17.0": "17.0"
+    "18.0": "18.0"
+    "19.0": "19.0"
+  default: "19.0"
+
+python_version:
+  type: str
+  help: Python version for devbox to pin (Odoo's supported range varies by version).
+  choices:
+    - "3.10"
+    - "3.11"
+    - "3.12"
+  # Odoo 17 ships with/recommends 3.11; 18 and 19 run on 3.12.
+  default: "{% if odoo_version == '17.0' %}3.11{% else %}3.12{% endif %}"
+
+postgresql_version:
+  type: str
+  help: PostgreSQL major version for devbox to pin.
+  choices:
+    - "14"
+    - "15"
+    - "16"
+    - "17"
+  # Odoo 19 targets PostgreSQL 17; 16 is a safe default for 17/18.
+  default: "{% if odoo_version == '19.0' %}17{% else %}16{% endif %}"
+
+nodejs_version:
+  type: str
+  help: Node.js major version for devbox to pin (used by rtlcss/lessc tooling).
+  default: "20"
+
+use_enterprise:
+  type: bool
+  help: Wire up an Odoo Enterprise symlink (requires private repo access)?
+  default: true
