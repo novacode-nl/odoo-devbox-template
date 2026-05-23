@@ -1,4 +1,4 @@
-# Odoo Devbox — Copier template
+# Odoo Devbox — Template
 
 A [Copier](https://copier.readthedocs.io/) template that scaffolds a reproducible
 [Devbox](https://www.jetify.com/devbox) development environment for
@@ -10,20 +10,18 @@ It pins a reproducible toolchain (Python, PostgreSQL, Node.js, `wkhtmltopdf`,
 tasks and launch configs (`F5` "just works"), socket-only PostgreSQL, and a
 curated addons-`requirements.txt` workflow.
 
-This template is **not OCA-specific** — it works for any Odoo project (own
-addons, third-party clones, with or without Enterprise). The structure is
-inspired in part by
-[oca-addons-repo-template](https://github.com/OCA/oca-addons-repo-template).
+This template is works for any Odoo project (own addons, third-party clones,
+with or without Enterprise).
 
 ## Usage
 
-Install Copier (`pipx install copier` or `uv tool install copier`), then:
+Install Copier (e.g. `pipx install copier`, `uv tool install copier`), then:
 
 ```bash
 # Generate a new project
 copier copy gh:<org>/odoo-devbox path/to/my-odoo-project
 
-# …or from a local clone of this template
+# ...or from a local clone of this template
 copier copy /path/to/odoo-devbox path/to/my-odoo-project
 ```
 
@@ -91,5 +89,5 @@ packages (e.g. `gcc`) are identical and stay pinned.
 
 ## License
 
-See [src/LICENSE](src/LICENSE) (AGPL-3.0), which is also shipped into generated
-projects.
+This template is licensed under [AGPL-3.0](LICENSE). Generated projects do **not**
+inherit a LICENSE — each project ships its own.
