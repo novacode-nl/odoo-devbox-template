@@ -2,7 +2,7 @@
 # Docs: https://copier.readthedocs.io/en/stable/configuring/
 #
 # Generate a project:
-#   copier copy gh:<org>/odoo-devbox path/to/new-project
+#   copier copy gh:<org>/odoo-devbox-template path/to/new-project
 # Update an existing project to a newer template version:
 #   cd path/to/new-project && copier update
 
@@ -84,11 +84,6 @@ postgresql_version:
     - "17"
   # Odoo 19 targets PostgreSQL 17; 16 is a safe default for 17/18.
   default: "{% if odoo_version == '19.0' %}17{% else %}16{% endif %}"
-
-nodejs_version:
-  type: str
-  help: Node.js major version for devbox to pin (used by rtlcss/lessc tooling).
-  default: "20"
 
 use_enterprise:
   type: bool
