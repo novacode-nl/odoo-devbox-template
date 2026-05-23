@@ -1,0 +1,24 @@
+{
+	// Workspace for developing THIS Copier template (not for generated projects —
+	// those get their own `main.code-workspace` from src/main.code-workspace.jinja).
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		// Highlight Jinja tags in the template files.
+		"files.associations": {
+			"*.jinja": "jinja"
+		},
+		"search.exclude": {
+			"**/.git": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			// Jinja syntax highlighting for the .jinja template files.
+			"samuelcolvin.jinjahtml"
+		]
+	}
+}

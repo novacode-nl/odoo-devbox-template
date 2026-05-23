@@ -31,7 +31,7 @@
 	},
 	"extensions": {
 		// mkhl.direnv: loads .envrc on folder open so VS Code (and its Python extension)
-		// inherits the devbox env (PYTHON_BIN, PATH with python3.12, etc.). Without it,
+		// inherits the devbox env (PYTHON_BIN, PATH with python{{ python_version }}, etc.). Without it,
 		// VS Code scans .venv outside devbox and pins to whatever interpreter is on disk.
 		"recommendations": [
 			"mkhl.direnv"

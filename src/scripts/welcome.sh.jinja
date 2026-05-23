@@ -7,7 +7,7 @@ reset=$'\033[0m'
 
 cat <<EOF
 
-${cyan}Odoo 19 Devbox${reset}
+${cyan}{{ project_name }} (Odoo {{ odoo_version }})${reset}
   ${bold}devbox run setup${reset}         First-time setup (venv, pip deps, PostgreSQL)
   ${bold}devbox services start${reset}    Start PostgreSQL in the background
   ${bold}devbox services stop${reset}     Stop PostgreSQL
