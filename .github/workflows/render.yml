@@ -1,0 +1,78 @@
+name: Render template
+
+# Validates that the Copier template still renders cleanly for every supported
+# Odoo version. Add the "render (…)" jobs as required status checks on `main`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: render (${{ matrix.odoo }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - odoo: "17.0"
+            python: "3.11"
+            pg: "16"
+          - odoo: "18.0"
+            python: "3.12"
+            pg: "16"
+          - odoo: "19.0"
+            python: "3.12"
+            pg: "17"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Copier reads the template from git history (--vcs-ref)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Copier
+        run: pip install copier
+      - name: Render Odoo ${{ matrix.odoo }}
+        run: >
+          copier copy --defaults --vcs-ref=HEAD
+          --data odoo_version=${{ matrix.odoo }}
+          . /tmp/out
+      - name: Validate rendered project
+        run: >
+          python .github/scripts/check_render.py
+          /tmp/out "${{ matrix.odoo }}" "${{ matrix.python }}" "${{ matrix.pg }}"
+      - name: Rendered shell scripts parse
+        run: |
+          for f in /tmp/out/devbox-setup.sh /tmp/out/scripts/*.sh; do
+            bash -n "$f" && echo "ok: $(basename "$f")"
+          done
+
+  enterprise-off:
+    name: render (use_enterprise=false)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Copier
+        run: pip install copier
+      - name: Render without Enterprise
+        run: >
+          copier copy --defaults --vcs-ref=HEAD
+          --data odoo_version=18.0 --data use_enterprise=false
+          . /tmp/noent
+      - name: Assert no Enterprise wiring
+        run: |
+          if grep -rni "enterprise" /tmp/noent/devbox-setup.sh /tmp/noent/README.md; then
+            echo "::error::Enterprise wiring leaked with use_enterprise=false"
+            exit 1
+          fi
+          echo "OK: no Enterprise wiring in setup script or README"
