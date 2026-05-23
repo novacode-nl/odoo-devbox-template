@@ -52,6 +52,21 @@ jobs:
             bash -n "$f" && echo "ok: $(basename "$f")"
           done
 
+  readme-preview:
+    name: README preview in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Copier reads the template from git
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Copier
+        run: pip install copier
+      - name: Check src/README.md is up to date
+        run: scripts/render-readme.sh --check
+
   enterprise-off:
     name: render (use_enterprise=false)
     runs-on: ubuntu-latest
