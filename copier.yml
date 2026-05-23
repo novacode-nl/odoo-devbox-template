@@ -37,6 +37,12 @@ _exclude:
   # stripped), hence "devbox.lock.*" — which matches devbox.lock.17.0 etc. but
   # not the dispatcher output "devbox.lock" (no trailing dot).
   - "devbox.lock.*"
+  # src/README-preview.md is a pre-rendered preview of src/README.md.jinja
+  # (committed only so the generated README is browsable on GitHub). No .jinja
+  # renders to this name, so excluding it drops just the preview — the real
+  # README.md (from README.md.jinja) is unaffected. Regenerate via
+  # scripts/render-readme.sh.
+  - "README-preview.md"
 
 # Record answers in the generated project so `copier update` works.
 _answers_file: .copier-answers.yml

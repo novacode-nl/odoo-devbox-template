@@ -8,6 +8,12 @@ A [Copier](https://copier.readthedocs.io/) template that scaffolds a reproducibl
 [Odoo](https://www.odoo.com), with Jinja-templated support for **Odoo 17.0,
 18.0 and 19.0**.
 
+> **What you'll actually get:** browse the generated project's README at
+> [src/README-preview.md](src/README-preview.md) — a pre-rendered preview
+> (defaults: Odoo 19.0, Enterprise on) of the [README.md.jinja](src/README.md.jinja)
+> that ships into every new project, describing day-to-day usage of the
+> scaffolded environment.
+
 It pins a reproducible toolchain (Python, PostgreSQL, `wkhtmltopdf`, `rtlcss`,
 build/native libs) in `devbox.json`, ships VS Code workspace tasks and launch
 configs (`F5` "just works"), socket-only PostgreSQL, and a curated
@@ -31,11 +37,6 @@ copier copy /path/to/odoo-devbox-template path/to/my-odoo-project
 Copier asks a few questions; answer them and the project skeleton is rendered
 into the target directory. Afterwards, follow the generated `README.md` for
 first-time setup (`devbox run setup`).
-
-> **What you'll actually get:** browse the generated project's README at
-> [src/README.md](src/README.md) — a pre-rendered preview (defaults: Odoo 19.0,
-> Enterprise on) of the [README.md.jinja](src/README.md.jinja) that ships into
-> every new project, describing day-to-day usage of the scaffolded environment.
 
 ### Updating a generated project
 
@@ -74,7 +75,7 @@ overridden at the prompt.
     ├── devbox.json.jinja
     ├── devbox-setup.sh.jinja
     ├── README.md.jinja    # source of truth for the generated project's README
-    ├── README.md          # rendered preview of the above (browsable on GitHub)
+    ├── README-preview.md  # rendered preview of the above (browsable on GitHub; not copied)
     ├── .copier-answers.yml.jinja
     ├── devbox.lock.jinja        # dispatcher: includes the per-version lock
     ├── devbox.lock.17.0.jinja   # real, full lock for Odoo 17.0  (not copied as-is)
@@ -87,15 +88,15 @@ overridden at the prompt.
 Files ending in `.jinja` are rendered (suffix stripped); everything else under
 `src/` is copied verbatim.
 
-[src/README.md](src/README.md) is the one exception that isn't really "verbatim":
-it's a **rendered preview** of [src/README.md.jinja](src/README.md.jinja) (with
-default answers) committed only so the generated README is browsable on GitHub.
-It never reaches generated projects — Copier renders `README.md.jinja` to the
-same `README.md` path, and the rendered output wins. Regenerate it after editing
-the `.jinja`:
+[src/README-preview.md](src/README-preview.md) is the one file that isn't really
+"verbatim": it's a **rendered preview** of [src/README.md.jinja](src/README.md.jinja)
+(with default answers) committed only so the generated README is browsable on
+GitHub. It never reaches generated projects — its name is `_exclude`d in
+`copier.yml` (no `.jinja` renders to that name, so excluding it leaves the real
+`README.md` untouched). Regenerate it after editing the `.jinja`:
 
 ```bash
-scripts/render-readme.sh          # rewrite src/README.md
+scripts/render-readme.sh          # rewrite src/README-preview.md
 scripts/render-readme.sh --check  # CI uses this to fail on a stale preview
 ```
 
