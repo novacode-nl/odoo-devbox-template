@@ -1,0 +1,4 @@
+{
+  "$comment": "Registry of addon repos vendored under addons/ as git subtrees. Managed by scripts/update-subtrees.sh (devbox run update-subtrees). Add an entry to 'subtrees' to vendor a repo; the script 'git subtree add's it on first run and 'git subtree pull's it thereafter. Each entry needs a 'prefix' (e.g. addons/<repo>), a git 'url', and a 'branch' (your Odoo series, e.g. {{ odoo_version }}). Example: { \"prefix\": \"addons/queue\", \"url\": \"git@github.com:OCA/queue.git\", \"branch\": \"{{ odoo_version }}\" }",
+  "subtrees": []
+}

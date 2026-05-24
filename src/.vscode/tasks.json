@@ -48,6 +48,16 @@
         "panel": "dedicated"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "Update Subtrees",
+      "type": "shell",
+      "command": "devbox run update-subtrees",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
     }
   ]
 }

@@ -6,12 +6,15 @@
 
 This is a [**Devbox**](https://www.jetify.com/devbox) project for [**Odoo 19.0**](https://www.odoo.com) development.
 
-It pins a reproducible toolchain (Python, PostgreSQL, `wkhtmltopdf`, `rtlcss`, build/native libs) in [devbox.json](devbox.json) — with exact versions and hashes auto-tracked in [devbox.lock](devbox.lock) — so every deployment (e.g. developer, CI) gets the same environment.
+**Scaffolded with the [odoo-devbox-template](https://github.com/novacode-nl/odoo-devbox-template) ([Copier](https://copier.readthedocs.io/)):**
 
-It also ships VS Code workspace tasks and launch configs so `F5` "just works".
+- Run `copier update` to pull in template improvements.
 
-On first run, devbox downloads all declared Nix packages and drops you into an isolated shell with everything on PATH.\
-`devbox run setup` then creates the Python venv, installs Odoo + pip deps, and initializes PostgreSQL.
+**What this provides:**
+
+- **Reproducible toolchain** — pins Python, PostgreSQL, `wkhtmltopdf`, `rtlcss` and build/native libs in [devbox.json](devbox.json), with exact versions and hashes auto-tracked in [devbox.lock](devbox.lock), so every deployment (e.g. developer, CI) gets the same environment.
+- **VS Code integration** — ships workspace tasks and launch configs so `F5` "just works".
+- **One-command setup** — on first run, devbox downloads all declared Nix packages and drops you into an isolated shell with everything on PATH. `devbox run setup` then creates the Python venv, installs Odoo + pip deps, and initializes PostgreSQL.
 
 > **Apple Silicon (aarch64-darwin):** `wkhtmltopdf` is **excluded** from the devbox profile because nixpkgs has no working build for it on ARM macOS. Odoo PDF reports won't render until you install it manually — e.g. `brew install --cask wkhtmltopdf`, or any other source — and ensure `wkhtmltopdf` is on your PATH (system PATH is fine; devbox shell inherits it).
 
@@ -75,6 +78,37 @@ Addons live in two sibling directories, depending on whether you want them versi
    ```
 
 Either way, add the module path(s) to `addons_path` in `odoo.conf`. Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
+
+#### Git subtrees
+
+Also addons under `addons/` can be administered as **git subtrees**. The set of those repos is registered in the top-level [addons.json](addons.json).
+
+**Example:**
+
+```json
+{
+  "subtrees": [
+    { "prefix": "addons/queue", "url": "git@github.com:OCA/queue.git", "branch": "19.0" }
+  ]
+}
+```
+
+**To sync them all, run:**
+
+```sh
+devbox run update-subtrees
+```
+
+**Alternatively,** you can:
+
+- Run [scripts/update-subtrees.sh](scripts/update-subtrees.sh) directly
+- Use the **Update Subtrees - VS Code task**.
+
+For each `addons.json` entry the script `git subtree add`s the repo if its `prefix` doesn't exist yet, and `git subtree pull`s it (squashed) otherwise.
+
+So the same command both onboards a newly registered repo and updates existing ones. **To add an addon repo, just add an entry to `addons.json`** and re-run; no script edits needed.
+
+The working tree must be clean (subtree add/pull create commits).
 
 ## Addons deps install
 

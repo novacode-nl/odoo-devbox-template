@@ -32,10 +32,13 @@ trap 'rm -rf "$tmp"' EXIT
 out="$tmp/render"
 
 # --defaults: no prompts; --trust: allow _message_after_copy etc.
+# --vcs-ref=HEAD: render the *current* source. Without it, once a release tag
+# (v*) exists Copier defaults to the latest tag and the preview would silently
+# pin to that stale commit instead of tracking README.md.jinja.
 # Copier is chatty (per-file progress, the post-copy message, and a
 # DirtyLocalWarning when run against an uncommitted tree) — keep it quiet and
 # only surface its output if the render actually fails.
-if ! copier copy --defaults --trust . "$out" >"$tmp/copier.log" 2>&1; then
+if ! copier copy --defaults --trust --vcs-ref=HEAD . "$out" >"$tmp/copier.log" 2>&1; then
   cat "$tmp/copier.log" >&2
   echo "error: copier failed to render the template." >&2
   exit 1

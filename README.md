@@ -21,7 +21,7 @@ build/native libs) in `devbox.json`.
 - Ships VS Code workspace tasks and launch configs (`F5` "just works"), socket-only PostgreSQL.
 - A curated addons-`requirements.txt` workflow.
 
-This template is works for any Odoo project (own addons, third-party clones,
+This template works for any Odoo project (own addons, third-party clones,
 with or without Enterprise).
 
 ## Usage
