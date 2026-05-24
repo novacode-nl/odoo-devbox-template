@@ -8,13 +8,14 @@ A [Copier](https://copier.readthedocs.io/) template that scaffolds a reproducibl
 [Odoo](https://www.odoo.com), with Jinja-templated support for **Odoo 17.0,
 18.0 and 19.0**.
 
-**What you'll actually get:**\
+## What you'll actually get
+
 Browse the generated project's README at [src/README-preview.md](src/README-preview.md).\
 It's a pre-rendered preview (defaults: Odoo 19.0, Enterprise on) of
 [README.md.jinja](src/README.md.jinja) — the README that ships into every new
 project, describing day-to-day usage of the scaffolded environment.
 
-This Devbox setup:
+**This Devbox setup:**
 - Pins a reproducible toolchain (Python, PostgreSQL, `wkhtmltopdf`, `rtlcss`,
 build/native libs) in `devbox.json`.
 - Ships VS Code workspace tasks and launch configs (`F5` "just works"), socket-only PostgreSQL.
@@ -51,7 +52,7 @@ copier update
 This replays your recorded answers (stored in `.copier-answers.yml`) and
 merges template changes, prompting only on conflicts.
 
-## Questions
+## Copier questions
 
 | Question | Default | Notes |
 | --- | --- | --- |
