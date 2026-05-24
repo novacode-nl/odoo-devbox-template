@@ -58,8 +58,9 @@ _message_after_copy: |
 # --- Questions ---------------------------------------------------------------
 project_name:
   type: str
-  help: Human-readable project name (README title, welcome banner).
-  default: Odoo Devbox
+  help: Project name (README title, shell welcome banner).
+  # Defaults to the destination directory name (i.e. the repo/project folder).
+  default: "{{ _copier_conf.dst_path.name }}"
 
 odoo_version:
   type: str

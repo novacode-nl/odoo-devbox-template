@@ -56,7 +56,7 @@ merges template changes, prompting only on conflicts.
 
 | Question | Default | Notes |
 | --- | --- | --- |
-| `project_name` | `Odoo Devbox` | README title and shell welcome banner. |
+| `project_name` | target directory name | README title and shell welcome banner. Defaults to the name of the directory you generate into. |
 | `odoo_version` | `19.0` | One of `17.0`, `18.0`, `19.0`. Drives clone branches, symlink targets and the version-derived defaults below. |
 | `python_version` | `3.11` (17.0) / `3.12` (18.0, 19.0) | Pinned in `devbox.json`. |
 | `postgresql_version` | `16` (17.0, 18.0) / `17` (19.0) | Pinned in `devbox.json`. |

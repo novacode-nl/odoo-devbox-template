@@ -15,8 +15,8 @@
 # copier.yml so it never ships into generated projects.
 set -euo pipefail
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo_root"
+template_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$template_root"
 
 check=false
 [[ "${1:-}" == "--check" ]] && check=true
@@ -38,7 +38,11 @@ out="$tmp/render"
 # Copier is chatty (per-file progress, the post-copy message, and a
 # DirtyLocalWarning when run against an uncommitted tree) — keep it quiet and
 # only surface its output if the render actually fails.
-if ! copier copy --defaults --trust --vcs-ref=HEAD . "$out" >"$tmp/copier.log" 2>&1; then
+# project_name defaults to the destination dir name, but here that's a throwaway
+# temp dir; pin it to this repo's own directory name so the preview has a stable,
+# meaningful title instead of "render".
+if ! copier copy --defaults --trust --vcs-ref=HEAD \
+      --data project_name="$(basename "$template_root")" . "$out" >"$tmp/copier.log" 2>&1; then
   cat "$tmp/copier.log" >&2
   echo "error: copier failed to render the template." >&2
   exit 1
