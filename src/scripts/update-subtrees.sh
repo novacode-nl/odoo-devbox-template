@@ -21,7 +21,10 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 # git subtree add/pull create commits, so the working tree must be clean.
-if ! git diff-index --quiet HEAD --; then
+# Refresh the index first so stale stat info (e.g. mtimes bumped by the devbox
+# shell init hook) doesn't produce a false "dirty" result.
+git update-index -q --refresh || true
+if [ -n "$(git status --porcelain)" ]; then
   echo "[update-subtrees] Working tree has uncommitted changes — commit or stash first." >&2
   exit 1
 fi
