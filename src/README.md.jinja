@@ -274,6 +274,8 @@ PostgreSQL listens on a Unix socket only. Connect using the socket directory as 
 
 `psql -h /tmp/<project-dir-basename> -U odoo postgres`
 
+Socket-only is not devbox's default: its builtin `postgresql` plugin ships a `process-compose.yaml` that also listens on TCP (port 5432), and rewrites that file whenever it recomputes the environment. [scripts/write-process-compose-pg.sh](scripts/write-process-compose-pg.sh) replaces it with the socket-only version, and runs from `init_hook` in [devbox.json](devbox.json) so it is re-applied on every devbox shell entry. A config written by the plugin takes effect at the next `devbox services restart postgresql` (or `devbox services stop` + `up`).
+
 ## Technologies and tools
 
 **Devbox**

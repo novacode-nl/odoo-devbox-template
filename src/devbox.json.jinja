@@ -30,7 +30,9 @@
       "excluded_platforms": ["aarch64-darwin"]
     }
   },
-  "env": {},
+  "env": {
+    "PGDATABASE": "postgres"
+  },
   "shell": {
     "init_hook": [
       "export PYTHON_BIN=$(bash scripts/python-bin.sh)",
@@ -38,6 +40,7 @@
       "if [ ! -d .venv ]; then $PYTHON_BIN -m venv .venv; fi",
       ". .venv/bin/activate",
       "export PYTHONPATH=$PWD/odoo:$PYTHONPATH",
+      "bash scripts/write-process-compose-pg.sh",
       "bash scripts/welcome.sh",
       "alias ls='ls --color=auto'"
     ],
