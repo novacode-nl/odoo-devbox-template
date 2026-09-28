@@ -25,6 +25,16 @@
       "problemMatcher": []
     },
     {
+      "label": "Odoo LS: regenerate odools.toml",
+      "type": "shell",
+      "command": "devbox run odools",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Start Services",
       "type": "shell",
       "command": "devbox services up",

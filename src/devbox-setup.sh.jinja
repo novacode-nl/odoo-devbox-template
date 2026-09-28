@@ -59,7 +59,7 @@ if [ -f "$DEVBOX_D_CONF" ]; then
 fi
 
 # --- Python virtualenv ---
-echo "[1/4] Setting up Python virtualenv..."
+echo "[1/5] Setting up Python virtualenv..."
 # scripts/python-bin.sh derives the version from devbox.json's packages list (single
 # source of truth). devbox.json's `env` block isn't exported to `devbox run` contexts,
 # so we can't rely on $PYTHON_BIN being inherited from the init_hook here.
@@ -87,18 +87,18 @@ fi
 pip install --upgrade pip setuptools wheel
 
 # --- Install Odoo + Python dependencies ---
-echo "[2/4] Installing Odoo {{ odoo_version }} and Python dependencies..."
+echo "[2/5] Installing Odoo {{ odoo_version }} and Python dependencies..."
 # Use psycopg2-binary (prebuilt) instead of psycopg2 (requires pg_config + libpq headers)
 sed 's/psycopg2==/psycopg2-binary==/' "${WORKSPACE}/odoo/requirements.txt" \
   | pip install -r /dev/stdin
 # The workspace-root requirements.txt (if any) and addon deps are installed by
-# scripts/install-addons-deps.sh below — see step [4/4].
+# scripts/install-addons-deps.sh below — see step [4/5].
 
 # --- Ensure odoo-data directory exists for filestore/attachments ---
 mkdir -p "${WORKSPACE}/odoo-data"
 
 # --- PostgreSQL ---
-echo "[3/4] Initializing PostgreSQL (socket only)..."
+echo "[3/5] Initializing PostgreSQL (socket only)..."
 
 # Ensure process-compose.yaml is correct for socket-only PG
 scripts/write-process-compose-pg.sh
@@ -140,8 +140,14 @@ pg_ctl -D "$PGDATA" stop || true
 # Installs the curated workspace-root requirements.txt (the single source of
 # truth). Use `devbox run collect-deps` to gather addon requirements into a
 # commented overview there first. No-op if requirements.txt is absent.
-echo "[4/4] Installing addon requirements..."
+echo "[4/5] Installing addon requirements..."
 bash "${WORKSPACE}/scripts/install-addons-deps.sh"
+
+# --- Odoo Language Server config (VS Code) ---
+# Generates odools.toml from odoo.conf's addons_path for the Odoo VS Code
+# extension. Re-run with `devbox run odools` after editing addons_path.
+echo "[5/5] Writing odools.toml (Odoo Language Server)..."
+bash "${WORKSPACE}/scripts/write-odools-toml.sh"
 
 echo ""
 echo "=== Setup complete ==="

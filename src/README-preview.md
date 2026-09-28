@@ -169,10 +169,22 @@ Available via **Terminal → Run Task…** ([.vscode/tasks.json](.vscode/tasks.j
 | --- | --- |
 | `Devbox Setup: once` | <ul><li>Runs `devbox run setup` only if `.devbox/.setup-done` is absent.</li><li>Then [**installs addons deps** ↑](#addons-deps-install).</li><li>Auto-runs on folder open.</li></ul> |
 | `Devbox Setup: force re-run` | <ul><li>Removes the marker `.devbox/.setup-done` and re-runs setup `devbox run setup`.</li><li>Then [**installs addons deps** ↑](#addons-deps-install).</li><li>Use after pulling Odoo changes or editing `devbox.json`, `devbox-setup.sh`, or `odoo.conf`.</li></ul> |
+| `Odoo LS: regenerate odools.toml` | <ul><li>Runs `devbox run odools`: regenerates [**`odools.toml`** ↓](#odoo-language-server-odoolstoml) from `odoo.conf`'s `addons_path`.</li><li>Use after editing `addons_path`.</li></ul> |
 | `Start Services` | <ul><li>Runs `devbox services up` (process-compose).</li><li>Auto-runs on folder open after setup.</li></ul> |
 | `Stop Services` | Runs `devbox services stop`. |
 
 Both `Devbox Setup` tasks are also reachable from the CLI as `devbox run setup-once` and `devbox run setup-force`.
+
+### Odoo Language Server (`odools.toml`)
+
+The official **[Odoo](https://marketplace.visualstudio.com/items?itemName=Odoo.odoo)** extension resolves Odoo models: go to definition and find references work through `_inherit`, `env['model']`, `mapped('field')` and field names in strings, which Pylance can't follow.
+
+It reads its config from `odools.toml` in the workspace root. [scripts/write-odools-toml.sh](scripts/write-odools-toml.sh) generates that file from `odoo.conf`'s `addons_path` (Odoo's own addons are found via `odoo_path`) and uses `.venv/bin/python`. It runs as the last step of `devbox run setup`. Regenerate it after editing `addons_path` with the `Odoo LS: regenerate odools.toml` task or `devbox run odools`.
+
+- The file contains absolute, machine-specific paths and is git-ignored.
+- A hand-written `odools.toml` (one without the generated header) is left alone. Delete it to switch back to the generated one.
+- After (re)generating, reload the window and select the profile (named after the project directory) in the Odoo status bar item.
+- When the extension asks to set the Python language server to `None` for this workspace, accept, so that Pylance and the Odoo LS don't both answer.
 
 ## Usage — CLI (devbox shell)
 
@@ -235,6 +247,12 @@ Run the same command — it installs the new addons' Python deps (see [Addons de
 
 ```bash
 devbox run update-deps
+```
+
+For VS Code, also regenerate the Odoo Language Server config (see [Odoo Language Server ↑](#odoo-language-server-odoolstoml)):
+
+```bash
+devbox run odools
 ```
 
 ## odoo.conf

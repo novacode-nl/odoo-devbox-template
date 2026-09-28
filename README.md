@@ -20,6 +20,7 @@ project, describing day-to-day usage of the scaffolded environment.
 build/native libs) in `devbox.json`.
 - Ships VS Code workspace tasks and launch configs (`F5` "just works"), socket-only PostgreSQL.
 - A curated addons-`requirements.txt` workflow.
+- Generates `odools.toml` from `odoo.conf`, so the official Odoo VS Code extension's go-to-definition and references work across all your addons.
 
 This template works for any Odoo project (own addons, third-party clones,
 with or without Enterprise).

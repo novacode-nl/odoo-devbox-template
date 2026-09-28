@@ -11,6 +11,8 @@ odoo
 odoo-data
 # Local Odoo config
 odoo.conf
+# Generated Odoo Language Server config (scripts/write-odools-toml.sh)
+odools.toml
 
 # Devbox
 .devbox/
