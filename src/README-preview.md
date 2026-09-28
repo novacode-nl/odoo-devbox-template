@@ -183,7 +183,7 @@ It reads its config from `odools.toml` in the workspace root. [scripts/write-odo
 
 - The file contains absolute, machine-specific paths and is git-ignored.
 - A hand-written `odools.toml` (one without the generated header) is left alone. Delete it to switch back to the generated one.
-- After (re)generating, reload the window and select the profile (named after the project directory) in the Odoo status bar item.
+- After (re)generating, reload the window. `main.code-workspace` selects the profile (named after the project) by itself; if the Odoo status bar item still asks, pick that one.
 - When the extension asks to set the Python language server to `None` for this workspace, accept, so that Pylance and the Odoo LS don't both answer.
 
 ## Usage — CLI (devbox shell)
