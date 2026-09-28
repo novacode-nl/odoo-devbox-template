@@ -1,6 +1,9 @@
 {
 	"folders": [
 		{
+			// Named, so the settings below can refer to it whatever the
+			// project directory is called.
+			"name": "{{ project_name }}",
 			"path": "."
 		},
 		{
@@ -9,6 +12,12 @@
 	],
 	"settings": {
 		"devbox.autoShellOnTerminal": false,
+		// Odoo Language Server (Odoo.odoo extension): one config for every
+		// workspace folder. Files under external-addons open in that folder,
+		// which has no odools.toml of its own, so without this they get none.
+		// The profile is the one scripts/write-odools-toml.sh writes.
+		"Odoo.serverConfigPath": "${workspaceFolder:{{ project_name }}}/odools.toml",
+		"Odoo.selectedProfile": "{{ project_name }}",
 		"search.useParentIgnoreFiles": false,
 		"search.useIgnoreFiles": false,
 		"search.exclude": {
