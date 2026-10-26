@@ -323,6 +323,15 @@ Raised by the `ms-python.vscode-python-envs` extension on workspace load. It tri
 
 ### F5 (Start Odoo) results in shell error(s):
 
+Fixed in the template since `v0.1.12`. `Start Odoo` runs in a terminal: debugpy types its launch command into a new one. On the first run the Python extensions typed `source .venv/bin/activate` there at the same time, so the two got mixed. `main.code-workspace` now sets `"python.terminal.activateEnvironment": false`; in `.vscode/settings.json` alone it had no effect, because in this multi-root workspace the Python Environments extension reads it from the workspace file only. Update with `copier update`, or add it to `main.code-workspace` yourself. If it still happens, check that your user settings don't set `python-envs.terminal.autoActivationType` (that one overrides it), or disable the extension as below.
+
+```bash
+❯  /usr/b source <workspace>/.venv/bin/activate
+zsh: no such file or directory: /usr/b
+```
+
+Or ...
+
 ```bash
 ❯  /usr/bin source <workspace>/.venv/bin/activate
 zsh: permission denied: /usr/bin

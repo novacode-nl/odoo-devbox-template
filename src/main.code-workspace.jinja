@@ -9,6 +9,12 @@
 	],
 	"settings": {
 		"devbox.autoShellOnTerminal": false,
+		// No .venv activation typed into new terminals: it races the debug
+		// launch command in the "Start Odoo" terminal ("/usr/b source ...").
+		// launch.json sets the interpreter itself. Here, not only in
+		// .vscode/settings.json: the Python Environments extension reads it
+		// without a folder, so in this multi-root workspace only this level counts.
+		"python.terminal.activateEnvironment": false,
 		// Odoo Language Server (Odoo.odoo extension): the profile of the
 		// odools.toml at the project root (scripts/write-odools-toml.sh).
 		// No Odoo.serverConfigPath: the extension passes it to the server as
