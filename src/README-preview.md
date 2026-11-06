@@ -68,7 +68,7 @@ Odoo 19.0 must be available at `<workspace>/odoo`. Enterprise modules are option
 
 Addons live in two sibling directories, depending on whether you want them versioned with *this* project:
 
-1. **`<workspace>/addons/<repo>`** — **tracked** by git. Use for this project's own addons, committed here (as a git submodule or a vendored directory).
+1. **`<workspace>/addons/<repo>`** — **tracked** by git. Use for this project's own addons, committed here (as a git submodule or a vendored directory). Third-party repos are easier to register in [addons.json](addons.json) and let `devbox run update-addon-repos` do this — see [Git subtrees and submodules ↓](#git-subtrees-and-submodules).
    ```bash
    git submodule add -b 19.0 https://github.com/<org>/<repo>.git addons/<repo>
    ```
@@ -79,16 +79,17 @@ Addons live in two sibling directories, depending on whether you want them versi
 
 Either way, add the module path(s) to `addons_path` in `odoo.conf`. Their Python deps (any `requirements.txt` at the repo root) are picked up automatically by `devbox run update-deps` — see [Addons deps install ↓](#addons-deps-install).
 
-#### Git subtrees
+#### Git subtrees and submodules
 
-Also addons under `addons/` can be administered as **git subtrees**. The set of those repos is registered in the top-level [addons.json](addons.json).
-
-**Example:**
+Addons under `addons/` can be administered as **git subtrees** or as **git submodules**. Both are registered in the top-level [addons.json](addons.json), each entry with a `prefix`, a `url` and a `branch`:
 
 ```json
 {
   "subtrees": [
     { "prefix": "addons/queue", "url": "git@github.com:OCA/queue.git", "branch": "19.0" }
+  ],
+  "submodules": [
+    { "prefix": "addons/server-tools", "url": "git@github.com:OCA/server-tools.git", "branch": "19.0" }
   ]
 }
 ```
@@ -96,19 +97,26 @@ Also addons under `addons/` can be administered as **git subtrees**. The set of 
 **To sync them all, run:**
 
 ```sh
-devbox run update-subtrees
+devbox run update-addon-repos
 ```
 
-**Alternatively,** you can:
+Or one kind at a time: `devbox run update-subtrees`, `devbox run update-submodules`. All three run [scripts/update-addon-repos.sh](scripts/update-addon-repos.sh), which you can also call directly, and each has a VS Code task (**Update Addon Repos (subtrees + submodules)**, **Update Subtrees**, **Update Submodules**).
 
-- Run [scripts/update-subtrees.sh](scripts/update-subtrees.sh) directly
-- Use the **Update Subtrees - VS Code task**.
+The same command onboards a newly registered repo and updates the ones already there, so **to add an addon repo, just add an entry to `addons.json`** and re-run; no script edits needed. A `prefix` belongs in one of the two lists — listed in both, the script refuses to run.
 
-For each `addons.json` entry the script `git subtree add` (adds) the repo if its `prefix` doesn't exist yet, and `git subtree pull` (pulls) it otherwise.
+**Which to pick:**
 
-So the same command both onboards a newly registered repo and updates existing ones. **To add an addon repo, just add an entry to `addons.json`** and re-run; no script edits needed.
+| | Subtree | Submodule |
+| --- | --- | --- |
+| In this repo | the addon's files, in your own history | a pointer (commit) plus an entry in `.gitmodules` |
+| After cloning | nothing to do | `devbox run update-submodules` (or `git submodule update --init`) to fill the directories |
+| Upstream changes | `git subtree pull --squash` | the pointer moves to the branch tip |
+| Commits | made for you (the tree must be clean first) | **staged, not committed**: the script prints what to commit |
+| Local edits | commit them here like any other file | commit them in the addon's own repo, then move the pointer |
 
-The working tree must be clean (subtree add/pull create commits).
+Subtrees keep everything in one clone, at the price of carrying the files; submodules keep the repos apart, at the price of an extra step after cloning. `devbox run setup` runs `git submodule update --init --recursive` for you, so a fresh clone is filled in on first setup. Changing the `branch` in `addons.json` is enough for both: for a submodule the script records it (`git submodule set-branch`) and follows it from then on.
+
+> `addons.json` comes from the template, so `copier update` may offer changes to its `$comment` — your entries are kept. `.gitmodules` is your project's own file and the template never touches it.
 
 ## Addons deps install
 

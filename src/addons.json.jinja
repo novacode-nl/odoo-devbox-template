@@ -1,4 +1,5 @@
 {
-  "$comment": "Registry of addon repos vendored under addons/ as git subtrees. Managed by scripts/update-subtrees.sh (devbox run update-subtrees). Add an entry to 'subtrees' to vendor a repo; the script 'git subtree add's it on first run and 'git subtree pull's it thereafter. Each entry needs a 'prefix' (e.g. addons/<repo>), a git 'url', and a 'branch' (your Odoo series, e.g. {{ odoo_version }}). Example: { \"prefix\": \"addons/queue\", \"url\": \"git@github.com:OCA/queue.git\", \"branch\": \"{{ odoo_version }}\" }",
-  "subtrees": []
+  "$comment": "Registry of the addon repos under addons/. Managed by scripts/update-addon-repos.sh: 'devbox run update-addon-repos' (both), 'devbox run update-subtrees' or 'devbox run update-submodules'. Add an entry to vendor or link a repo; the same command adds it on the first run and updates it after that. Each entry needs a 'prefix' (e.g. addons/<repo>), a git 'url' and a 'branch' (your Odoo series, e.g. {{ odoo_version }}). Use 'subtrees' to vendor the files into this repo's own history (git subtree add/pull --squash, commits automatically), or 'submodules' to record a pointer to the other repo (git submodule add / update --remote, left staged for you to commit). A prefix belongs in one list only. Example: { \"prefix\": \"addons/queue\", \"url\": \"git@github.com:OCA/queue.git\", \"branch\": \"{{ odoo_version }}\" }",
+  "subtrees": [],
+  "submodules": []
 }

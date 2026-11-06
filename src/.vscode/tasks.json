@@ -60,9 +60,29 @@
       "problemMatcher": []
     },
     {
+      "label": "Update Addon Repos (subtrees + submodules)",
+      "type": "shell",
+      "command": "devbox run update-addon-repos",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Update Subtrees",
       "type": "shell",
       "command": "devbox run update-subtrees",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Update Submodules",
+      "type": "shell",
+      "command": "devbox run update-submodules",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated"

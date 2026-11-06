@@ -58,6 +58,16 @@ if [ -f "$DEVBOX_D_CONF" ]; then
   fi
 fi
 
+# --- Addon submodules ---
+# A fresh clone leaves the directories of the addon repos registered as submodules
+# in addons.json empty, so check out the recorded commits. No --remote here: moving
+# the pointers to a branch tip is `devbox run update-submodules`, which commits
+# nothing by itself. No-op when the project uses no submodules.
+if [ -f "${WORKSPACE}/.gitmodules" ]; then
+  echo "Checking out addon submodules..."
+  git -C "${WORKSPACE}" submodule update --init --recursive
+fi
+
 # --- Python virtualenv ---
 echo "[1/5] Setting up Python virtualenv..."
 # scripts/python-bin.sh derives the version from devbox.json's packages list (single
