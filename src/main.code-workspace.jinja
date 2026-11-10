@@ -15,6 +15,11 @@
 		// .vscode/settings.json: the Python Environments extension reads it
 		// without a folder, so in this multi-root workspace only this level counts.
 		"python.terminal.activateEnvironment": false,
+		// Keep the Python Environments extension (ms-python.vscode-python-envs)
+		// inactive: on every .py file created or deleted it rescans the whole
+		// workspace with rg, without debounce, so a branch switch spawned
+		// hundreds of rg processes and made the checkout crawl.
+		"python.useEnvironmentsExtension": false,
 		// Odoo Language Server (Odoo.odoo extension): the profile of the
 		// odools.toml at the project root (scripts/write-odools-toml.sh).
 		// No Odoo.serverConfigPath: the extension passes it to the server as
