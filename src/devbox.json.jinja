@@ -39,6 +39,7 @@
       ". .venv/bin/activate",
       "export PYTHONPATH=$PWD/odoo:$PYTHONPATH",
       "bash scripts/write-process-compose-pg.sh",
+      "bash scripts/write-odools-toml.sh >/dev/null",
       "bash scripts/welcome.sh",
       "alias ls='ls --color=auto'"
     ],

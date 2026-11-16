@@ -191,7 +191,7 @@ Both `Devbox Setup` tasks are also reachable from the CLI as `devbox run setup-o
 
 The official **[Odoo](https://marketplace.visualstudio.com/items?itemName=Odoo.odoo)** extension resolves Odoo models: go to definition and find references work through `_inherit`, `env['model']`, `mapped('field')` and field names in strings, which Pylance can't follow.
 
-It reads its config from `odools.toml` in the workspace root. [scripts/write-odools-toml.sh](scripts/write-odools-toml.sh) generates that file from `odoo.conf`'s `addons_path` (Odoo's own addons are found via `odoo_path`) and uses `.venv/bin/python`. It runs as the last step of `devbox run setup`. Regenerate it after editing `addons_path` with the `Odoo LS: regenerate odools.toml` task or `devbox run odools`.
+It reads its config from `odools.toml` in the workspace root. [scripts/write-odools-toml.sh](scripts/write-odools-toml.sh) generates that file from `odoo.conf`'s `addons_path` (Odoo's own addons are found via `odoo_path`) and uses `.venv/bin/python`. It runs as the last step of `devbox run setup` and on every `devbox shell`, so it follows `addons_path`; whether the Odoo extension is installed or not, it only writes this small file. To regenerate it at once after editing `addons_path`, without a new shell, use the `Odoo LS: regenerate odools.toml` task or `devbox run odools`.
 
 - The file contains absolute, machine-specific paths and is git-ignored.
 - A hand-written `odools.toml` (one without the generated header) is left alone. Delete it to switch back to the generated one.
