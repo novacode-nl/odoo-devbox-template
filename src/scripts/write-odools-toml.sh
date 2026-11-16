@@ -57,7 +57,9 @@ for entry in "${ENTRIES[@]}"; do
   paths+=("$dir")
 done
 
-tmp="$(mktemp)"
+# Next to the target, so the rename below is atomic and on the same filesystem.
+tmp="${OUT}.tmp.$$"
+trap 'rm -f "${tmp}"' EXIT
 {
   echo "${HEADER}"
   echo "# Odoo Language Server config: https://github.com/odoo/odoo-ls"
@@ -72,6 +74,17 @@ tmp="$(mktemp)"
   done
   echo "]"
 } > "${tmp}"
+
+# Only replace the file when something actually changed. The devbox init_hook
+# runs this on every shell entry and every `devbox run`, and the Odoo extension
+# watches odools.toml: rewriting identical content would still change the mtime
+# and make the language server reload and re-index its whole knowledge base.
+if [ -f "${OUT}" ] && cmp -s "${tmp}" "${OUT}"; then
+  rm -f "${tmp}"
+  echo "[odools] ${OUT} is up to date (profile '${PROFILE}', ${#paths[@]} addons path(s))."
+  exit 0
+fi
+
 mv "${tmp}" "${OUT}"
 
 echo "[odools] Wrote ${OUT} (profile '${PROFILE}', ${#paths[@]} addons path(s))."
