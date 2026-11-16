@@ -327,7 +327,7 @@ devbox services attach
 > **Error refreshing packages**
 > Source: *Python Environments (Extension)*
 
-Raised by the `ms-python.vscode-python-envs` extension on workspace load. It tries to enumerate the Python environment outside the devbox shell and fails. See [Solution ↓](#solution) — disabling `ms-python.vscode-python-envs` for this workspace clears it.
+Raised by the `ms-python.vscode-python-envs` extension on workspace load. It tries to enumerate the Python environment outside the devbox shell and fails. See [Solution ↓](#solution): the workspace settings keep that extension idle, and disabling it for this workspace clears the popup for good.
 
 ### F5 (Start Odoo) results in shell error(s):
 
@@ -363,16 +363,31 @@ Error: unknown command "/usr/bin/env" for "devbox"
 
 See also: install the `mkhl.direnv` extension (see [Usage — VS Code ↑](#usage--vs-code)) so VS Code inherits the devbox env on folder open — this resolves most of the underlying interpreter-mismatch causes.
 
-Disable `ms-python.vscode-python-envs` for just this workspace (the actual disable state can't be set via settings JSON — VS Code stores it per-user).
+[`main.code-workspace`](main.code-workspace) already settles this with two settings, so there is usually nothing to do:
 
-This workspace already ships an `extensions.unwantedRecommendations` entry for `ms-python.vscode-python-envs` in [`main.code-workspace`](main.code-workspace). When you open the workspace, VS Code should surface a notification recommending you disable it — please follow that prompt.
+- `python.terminal.activateEnvironment: false` — no `source .venv/bin/activate` typed into new terminals, which is what raced the debugger's launch command and produced the errors above. `launch.json` sets the interpreter itself.
+- `python.useEnvironmentsExtension: false` — keeps `ms-python.vscode-python-envs` idle. It rescans the whole workspace with `rg` on every `.py` file created or deleted, without debounce, so a branch switch could spawn hundreds of `rg` processes.
 
-If you missed the notification, disable it manually:
+Both belong in the workspace file: in this multi-root workspace the Python Environments extension reads them without a folder, so `.vscode/settings.json` is ignored for these. Check that your *user* settings don't set `python-envs.terminal.autoActivationType`, which overrides the first one.
+
+If the errors persist, disable the extension for this workspace as well (that state can't be set in settings JSON — VS Code stores it per-user). The workspace ships an `extensions.unwantedRecommendations` entry for it, so VS Code should offer this in a notification when you open the workspace. If you missed it, do it by hand:
 
 1. Open the Extensions sidebar (Cmd+Shift+X)
 2. Search for `Python Environments` (publisher: Microsoft, id: `ms-python.vscode-python-envs`)
 3. Click the gear icon → "Disable (Workspace)"
 4. Reload the window when prompted
+
+## Troubleshooting - whole folders are red in the explorer
+
+The Odoo Language Server reports false alarms in Odoo and OCA code — "Template not found" and similar — and VS Code colours every parent folder of such a file red, so the explorer looks alarming for problems that aren't yours.
+
+[`main.code-workspace`](main.code-workspace) ships the opt-out commented out. Uncomment it to drop the colouring:
+
+```jsonc
+"problems.decorations.enabled": false,
+```
+
+The Problems panel and the underlining inside files stay, so nothing is hidden — only the explorer decorations go. Like the Python settings above, it must live in the workspace file rather than `.vscode/settings.json`, because only that level counts in this multi-root workspace.
 
 ## Troubleshooting - PostgreSQL data directory errors
 
