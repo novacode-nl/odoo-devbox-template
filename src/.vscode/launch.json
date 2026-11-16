@@ -15,6 +15,10 @@
         "env": {
           "PYTHONPATH": "${workspaceFolder}/odoo",
           "ODOO_PY_COLORS": "1",
+          // With workers > 0 (prefork), Odoo starts a gevent process for websockets, which
+          // monkey-patches the standard library. Without this, debugpy warns about it at
+          // every start and cannot debug that process.
+          "GEVENT_SUPPORT": "True",
           "PATH": "${workspaceFolder}/.devbox/nix/profile/default/bin:${env:PATH}"
         },
         "python": "${workspaceFolder}/.venv/bin/python",
