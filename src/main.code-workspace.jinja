@@ -26,6 +26,12 @@
 		// is, so ${workspaceFolder} is not expanded and only an absolute,
 		// machine-specific path would work there.
 		"Odoo.selectedProfile": "{{ project_name }}",
+		// The Odoo language server reports many false alarms in Odoo and OCA
+		// code (e.g. "Template not found"), which colour whole folders red in
+		// the explorer. To hide that colouring (the Problems panel and the
+		// underlining in files stay), uncomment the next line. Here, not in
+		// .vscode/settings.json: in this multi-root workspace only this level counts.
+		// "problems.decorations.enabled": false,
 		"search.useParentIgnoreFiles": false,
 		"search.useIgnoreFiles": false,
 		"search.exclude": {
